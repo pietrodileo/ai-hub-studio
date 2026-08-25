@@ -1,0 +1,177 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start IRIS Container",
+            "type": "shell",
+            "command": "docker compose up -d iris",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            }
+        },
+        {
+            "label": "Stop IRIS Container",
+            "type": "shell",
+            "command": "docker compose down",
+            "group": "none",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Full Stack",
+            "type": "shell",
+            "command": "docker compose up -d --build",
+            "group": {
+                "kind": "build"
+            },
+            "problemMatcher": []
+        },
+
+        // ========== BUILD & DEVELOPMENT ==========
+        {
+            "label": "Clean Build (No Cache)",
+            "type": "shell",
+            "command": "docker compose build --no-cache",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build IRIS Service Only",
+            "type": "shell",
+            "command": "docker compose build iris-ai-hub-studio",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Start All Services",
+            "type": "shell",
+            "command": "docker compose up -d",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Force Recreate Containers",
+            "type": "shell",
+            "command": "docker compose up -d --force-recreate",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Quick Restart IRIS",
+            "type": "shell",
+            "command": "docker compose restart iris-ai-hub-studio",
+            "dependsOn": [],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Rebuild & Restart IRIS",
+            "type": "shell",
+            "command": "docker compose up -d --build iris-ai-hub-studio",
+            "group": "build",
+            "problemMatcher": []
+        },
+
+        // ========== STOP & CLEANUP ==========
+        {
+            "label": "Stop All Services",
+            "type": "shell",
+            "command": "docker compose stop",
+            "group": "none",
+            "problemMatcher": []
+        },
+        {
+            "label": "Cleanup with Volumes",
+            "type": "shell",
+            "command": "docker compose down -v",
+            "group": "none",
+            "problemMatcher": []
+        },
+        {
+            "label": "Cleanup with Images",
+            "type": "shell",
+            "command": "docker compose down --rmi all",
+            "group": "none",
+            "problemMatcher": []
+        },
+        {
+            "label": "Cleanup Everything",
+            "type": "shell",
+            "command": "docker compose down --rmi all -v",
+            "group": "none",
+            "problemMatcher": [],
+            "presentation": { "reveal": "always" }
+        },
+        {
+            "label": "Prune Docker System",
+            "type": "shell",
+            "command": "docker system prune -a --volumes",
+            "group": "none",
+            "problemMatcher": []
+        },
+
+        // ========== LOGS & MONITORING ==========
+        {
+            "label": "View Entrypoint Log",
+            "type": "shell",
+            "command": "docker exec iris-ai-hub-studio cat /home/irisowner/dev/logs/entrypoint.log",
+            "dependsOn": [],
+            "group": "none",
+            "problemMatcher": []
+        },
+        {
+            "label": "Check Container Status",
+            "type": "shell",
+            "command": "docker ps -a --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\"",
+            "group": "none",
+            "problemMatcher": []
+        },
+        {
+            "label": "Check Resource Usage",
+            "type": "shell",
+            "command": "docker stats --no-stream --format \"table {{.Container}}\\t{{.CPUPerc}}\\t{{.MemUsage}}\"",
+            "group": "none",
+            "problemMatcher": []
+        },
+
+        // ========== IRIS & AI HUB OPERATIONS ==========
+        {
+            "label": "Open IRIS Shell",
+            "type": "shell",
+            "command": "docker exec -i iris-ai-hub-studio iris session IRIS",
+            "dependsOn": [],
+            "group": "none",
+            "problemMatcher": [],
+        },
+        {
+            "label": "Open Management Portal",
+            "type": "shell",
+            "command": "open http://localhost:9092/csp/sys/UtilHome.csp",
+            "dependsOn": [],
+            "group": "none",
+            "problemMatcher": [],
+        },
+        // ========== CONNECTIVITY TESTS ==========
+        {
+            "label": "Test: IRIS Management Portal",
+            "type": "shell",
+            "command": "curl -sf http://localhost:9092/csp/sys/UtilHome.csp && echo \"✓ Portal OK\" || echo \"✗ Portal unreachable\"",
+            "dependsOn": [],
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Test: AI Hub Health Endpoint",
+            "type": "shell",
+            "command": "curl -sf http://localhost:9092/ai-hub/api/health && echo \"✓ AI Hub OK\" || echo \"✗ AI Hub unreachable\"",
+            "dependsOn": [],
+            "group": "test",
+            "problemMatcher": []
+        },
+    ]
+}

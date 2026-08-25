@@ -10,7 +10,7 @@ Class Sample.MCPSetup Extends %RegisteredObject
         set props("DispatchClass") = "Sample.MCPService" 
         set props("AutheEnabled") = 64 // Unautheticated access
         set props("Type") = 18 // Type 18 corresponds to MCP service, ensuring it lives in the MCP Service menu. 
-        set props("NameSpace") = "IRISAPP"
+        set props("NameSpace") = "AI_HUB_STUDIO"
         set props("MatchRoles") = ":%All"
         set sc =  ##class(Security.Applications).Create("/mcp/sample", .props)
         if $$$ISERR(sc) {

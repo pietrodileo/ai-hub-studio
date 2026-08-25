@@ -1,0 +1,63 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "intersystems.serverManager": {
+            "servers": {
+                "iris-ai-hub-studio": {
+                    "name": "IRIS AI Hub Studio",
+                    "host": "localhost",
+                    "port": 9091,
+                    "username": "_SYSTEM",
+                    "password": "SYS",
+                    "namespace": "USER",
+                    "https": false,
+                    "active": true,
+                    "description": "Local IRIS AI Hub Studio instance for Bounty Program"
+                }
+            }
+        },
+        "intersystems.connection": {
+            "defaultServer": "iris-ai-hub-studio"
+        },
+        "intersystems.sourceControl": {
+            "codeDatabase": "USER",
+            "autoMapWorkspaces": true,
+            "workspaceFolder": "/opt/irisapp/src"
+        },
+        "files.exclude": {
+            "**/.git": true,
+            "**/.vscode": true,
+            "**/node_modules": true,
+            "**/storage": true,
+            "**/logs": true
+        },
+        "[objectscript]": {
+            "editor.defaultFormatter": "intersystems-community.vscode-objectscript"
+        }
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "IRIS AI Hub Studio - Attach",
+                "type": "intersystems",
+                "request": "attach",
+                "server": "iris-ai-hub-studio",
+                "namespace": "USER"
+            },
+            {
+                "name": "IRIS AI Hub Studio - Debug",
+                "type": "intersystems",
+                "request": "launch",
+                "server": "iris-ai-hub-studio",
+                "namespace": "USER",
+                "program": "^AIHubStudio.Init",
+                "stopOnEntry": false
+            }
+        ]
+    }
+}

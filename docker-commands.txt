@@ -1,0 +1,222 @@
+# ------------------------------------------------------------------------------
+# IRIS AI Hub Studio - Docker Commands Reference
+# 
+# Common Docker commands for managing the IRIS AI Hub Studio containers
+# ------------------------------------------------------------------------------
+
+# =============================================================================
+# BASIC CONTAINER MANAGEMENT
+# =============================================================================
+
+# Remove any old container
+# Note: Replace <container-name> with actual container name
+docker rm -f iris-ai-hub-studio
+docker rm -f ai-hub-backend
+docker rm -f ai-hub-frontend
+
+# Remove any old local images
+docker rmi iris-ai-hub-studio:latest
+docker rmi ai-hub-backend:latest
+docker rmi ai-hub-frontend:latest
+
+# Remove all containers, networks, and volumes (clean slate)
+docker compose down -v
+
+# =============================================================================
+# BUILD AND START
+# =============================================================================
+
+# Build images from scratch (no cache)
+docker compose build --no-cache
+
+# Build specific service
+docker compose build iris-ai-hub
+
+# Start all containers in background
+docker compose up -d
+
+# Start specific service
+docker compose up -d iris-ai-hub
+
+# Start containers and build images
+docker compose up -d --build
+
+# Start with force recreation
+docker compose up -d --force-recreate
+
+# =============================================================================
+# STOP AND REMOVE
+# =============================================================================
+
+# Stop all containers
+docker compose stop
+
+# Stop specific container
+docker compose stop iris-ai-hub
+
+# Remove containers and images
+docker compose down --rmi all
+
+# Remove containers, networks, volumes, and images
+docker compose down --rmi all -v
+
+# =============================================================================
+# LOGS AND MONITORING
+# =============================================================================
+
+# View logs for all services (follow)
+docker compose logs -f
+
+# View logs for specific service
+docker compose logs -f iris-ai-hub
+
+# View entrypoint logs
+docker exec -it iris-ai-hub-studio cat /opt/irisapp/logs/entrypoint.log
+
+# View IRIS console logs
+docker exec -it iris-ai-hub-studio cat /opt/irisapp/logs/iris.log
+
+# View AI Hub specific logs
+docker exec -it iris-ai-hub-studio cat /opt/irisapp/logs/ai-hub.log
+
+# Check container status
+docker ps -a
+
+# Check container health
+docker inspect --format='{{json .State.Health}}' iris-ai-hub-studio
+
+# =============================================================================
+# EXECUTING COMMANDS IN CONTAINERS
+# =============================================================================
+
+# Open shell in IRIS container
+docker exec -it iris-ai-hub-studio sh
+
+# Open IRIS session
+docker exec -it iris-ai-hub-studio iris session IRIS
+
+# Run ObjectScript code
+docker exec -it iris-ai-hub-studio iris session IRIS -U USER "write \"Hello from IRIS\""
+
+# Check if IRIS is ready
+docker exec -it iris-ai-hub-studio iris session IRIS -U %SYS "write \"READY\""
+
+# =============================================================================
+# NETWORK AND CONNECTIVITY
+# =============================================================================
+
+# Test IRIS REST API
+curl -f http://localhost:9092/csp/sys/UtilHome.csp
+
+# Test AI Hub endpoints (once configured)
+curl -f http://localhost:9092/ai-hub/api/health
+
+# Test WebSocket connection (using websocat)
+websocat ws://localhost:53773
+
+# Check port mapping
+netstat -tlnp | grep -E '9091|9092|53773'
+
+# =============================================================================
+# DEVELOPMENT WORKFLOW
+# =============================================================================
+
+# 1. Make changes to source files
+# 2. Rebuild and restart
+
+# Rebuild and restart IRIS container
+docker compose up -d --build iris-ai-hub
+
+# Rebuild and restart all containers
+docker compose up -d --build
+
+# Quick restart (no rebuild)
+docker compose restart iris-ai-hub
+
+# =============================================================================
+# VOLUME MANAGEMENT
+# =============================================================================
+
+# View volumes
+docker volume ls
+
+# Inspect volume
+docker volume inspect iris-ai-hub-studio_iris-data
+
+# Remove unused volumes
+docker volume prune
+
+# =============================================================================
+# IMAGES
+# =============================================================================
+
+# List images
+docker images
+
+# Inspect image
+docker inspect iris-ai-hub-studio:latest
+
+# Remove dangling images
+docker image prune
+
+# Remove all unused images
+docker image prune -a
+
+# =============================================================================
+# SYSTEM INFORMATION
+# =============================================================================
+
+# Docker system info
+docker info
+
+# Docker disk usage
+docker system df
+
+# Clean up everything (containers, networks, images, volumes)
+docker system prune -a --volumes
+
+# =============================================================================
+# AI HUB SPECIFIC COMMANDS
+# =============================================================================
+
+# Check AI Hub status
+docker exec -it iris-ai-hub-studio iris session IRIS -U %SYS "do ##class(AIHub.Status).Display()"
+
+# List registered agents
+docker exec -it iris-ai-hub-studio iris session IRIS -U USER "do ##class(AIHub.Agent.Registry).List()"
+
+# List registered tools
+docker exec -it iris-ai-hub-studio iris session IRIS -U USER "do ##class(AIHub.Tool.Registry).List()"
+
+# Test agent execution
+docker exec -it iris-ai-hub-studio iris session IRIS -U USER "do ##class(AIHub.Agent.Manager).Execute(\"test-agent\")"
+
+# =============================================================================
+# TROUBLESHOOTING
+# =============================================================================
+
+# Check container resource usage
+docker stats
+
+# Inspect container
+docker inspect iris-ai-hub-studio
+
+# View container processes
+docker top iris-ai-hub-studio
+
+# Export container logs
+docker logs iris-ai-hub-studio > iris-ai-hub-studio.log
+
+# =============================================================================
+# NOTES
+# =============================================================================
+
+# - Always use docker compose commands for multi-container management
+# - Use docker commands for individual container operations
+# - The iris-ai-hub-studio container is the main IRIS + AI Hub container
+# - Backend and frontend containers are optional for development
+# - Port 9092 = IRIS Management Portal
+# - Port 9091 = IRIS SuperServer
+# - Port 53773 = AI Hub WebSocket
+# - Port 3000 = Backend API
+# - Port 5173 = Frontend development server

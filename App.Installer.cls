@@ -1,0 +1,70 @@
+Class App.Installer
+{
+// Manifest class to install the source code and configure the environment
+XData setup
+{
+<Manifest>
+  <Log Level="3" Text="Start manifest" />
+  <Log Level="3" Text="Working directory: #{$system.Process.CurrentDirectory()}" />
+
+  <!-- Define Manifest Variables -->
+  <Default Name="NAMESPACE" Value="AI_HUB_STUDIO"/>
+  <Default Name="DBNAME" Value="AI_HUB_STUDIO"/>
+  <Default Name="APPPATH" Dir="/usr/irissys/mgr/"/>
+  <Default Name="SOURCESPATH" Dir="/home/irisowner/dev/src" />
+  <!-- <Default Name="SourceDir" Value="#{$system.Process.CurrentDirectory()}src"/> -->
+  <Default Name="RESOURCE" Value="%DB_${DBNAME}" /> 
+  
+  <!-- Import source code into existing namespace -->
+  <Log Level="3" Text="Importing source code into namespace ${NAMESPACE}" />
+  <Namespace Name="${NAMESPACE}">
+    <Import File="${SOURCESPATH}" Recurse="1"/>
+  </Namespace>
+
+  <!-- Create Web Application to reach the production -->
+  <Invoke Class="App.Installer" Method="RegisterWebApplication" CheckStatus="1" Return="restsc"> 
+    <Arg Value="${NAMESPACE}"/>
+    <Arg Value="/ai-hub/api/studio"/>
+    <Arg Value="EnsLib.REST.GenericService"/>
+    <Arg Value="REST API to handle messages"/>
+    <Arg Value="1"/>
+  </Invoke>
+
+  <Log Level="3" Text="End manifest" />
+
+</Manifest>
+}
+
+ClassMethod setup(ByRef pVars, pLogLevel As %Integer = 3, pInstaller As %Installer.Installer, pLogger As %Installer.AbstractLogger) As %Status [ CodeMode = objectgenerator, Internal ]
+{
+  #; Let XGL document generate code for this method. 
+  Quit ##class(%Installer.Manifest).%Generate(%compiledclass, %code, "setup")
+}
+
+/// Create a web application with a specified path and dispatch class in the desired namespace
+ClassMethod RegisterWebApplication(pNameSpace As %String = "NAMESPACENAME", pName As %String = "/wspath", pClassName As %String = "EnsLib.REST.GenericService", pDescription As %String = "REST API to handle messages", verbose As %Boolean = 0) As %Status
+{
+    New $Namespace
+    Set $Namespace = "%SYS"
+    Set ret = $$$OK
+    Set spec("AutheEnabled") = $$$AutheUnauthenticated
+    Set spec("NameSpace") = pNameSpace
+    Set spec("Description") = pDescription
+    Set spec("IsNameSpaceDefault") = $$$NO
+    Set spec("DispatchClass") = pClassName
+    Set spec("MatchRoles")=":%All"
+
+    If ('##class(Security.Applications).Exists(pName)) {
+        If verbose Write !,"Creating Web application """_pName_"""..."
+        Set ret = ##class(Security.Applications).Create(pName, .spec)
+        If verbose Write !, "Web application """_pName_""" is created.",!
+    }
+    Else { // ensure configuration matches in case of updating from old terminal versions
+        If verbose Write !, "Updating web application """_pName_"""..."
+        Set ret = ##class(Security.Applications).Modify(pName, .spec)
+        If verbose Write !, "Web application """_pName_""" is updated.",!
+    }
+    Return ret
+}
+
+}

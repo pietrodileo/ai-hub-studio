@@ -1,16 +1,112 @@
+# ------------------------------------------------------------------------------
+# IRIS AI Hub Studio - Docker Compose Configuration
+# 
+# This configuration sets up InterSystems IRIS with AI Hub EAP for the
+# IRIS AI Hub Studio project (Bounty Program Round 2)
+# 
+# Services:
+#   - IRIS with AI Hub: Primary database with AI capabilities
+#   - Backend: Node.js backend for AI Hub Studio
+#   - Frontend: React frontend for AI Hub Studio web interface
+# ------------------------------------------------------------------------------
+
 services:
   iris:
+    container_name: iris-ai-hub-studio
     build:
       context: .
       dockerfile: Dockerfile
     env_file: 
       .env
-    restart: always
+    image: iris-ai-hub-studio:latest
+    pull_policy: build
+    init: true
+    restart: unless-stopped
     environment:
+      # IRIS data directory
+      #- ISC_DATA_DIRECTORY=/durable/iris
+      # AI Hub configuration
+      - AI_HUB_ENABLED=1
+      - AI_HUB_PORT=53773
+      - AI_HUB_WS_PORT=53773
+      # CPF merge file
       - ISC_CPF_MERGE_FILE=/home/irisowner/dev/merge.cpf
     ports:
-      - 1972:1972
-      - 52773:52773
-      - 8080:8080
+      # Management Portal / REST APIs (default 52773 -> 9092)
+      - "9092:52773"
+      # SuperServer port (default 1972 -> 9091)
+      - "9091:1972"
+      # AI Hub specific ports
+      - "53773:53773"  # AI Hub WebSocket
+      - "54773:54773"  # AI Hub additional REST
     volumes:
+      # Durable storage for IRIS databases
+      # - ./storage:/durable    
       - ./:/home/irisowner/dev
+    # Entrypoint configuration
+    entrypoint: ["./docker-entrypoint.sh"]
+    networks:
+      - iris-ai-network
+
+  # Backend service for AI Hub Studio
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - IRIS_HOST=iris
+      - IRIS_PORT=1972
+      - IRIS_NAMESPACE=AI_HUB_STUDIO
+      - IRIS_USERNAME=_SYSTEM
+      - IRIS_PASSWORD=SYS
+    depends_on:
+      - iris
+    restart: unless-stopped
+    networks:
+      - iris-ai-network
+
+  # Frontend service for AI Hub Studio
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_IRIS_HOST=iris
+      - VITE_IRIS_PORT=1972
+      - VITE_BACKEND_HOST=backend
+      - VITE_BACKEND_PORT=3000
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - iris-ai-network
+
+networks:
+  iris-ai-network:
+    driver: bridge
+
+# ------------------------------------------------------------------------------
+# Usage Notes:
+# ------------------------------------------------------------------------------
+# 
+# Basic usage (IRIS only):
+#   docker compose up -d iris
+#
+# Full stack (IRIS + backend + frontend):
+#   docker compose up -d
+#
+# Access URLs:
+#   - IRIS Management Portal: http://localhost:9092/csp/sys/UtilHome.csp
+#   - AI Hub Studio: http://localhost:5173
+#   - Backend API: http://localhost:3000
+#   - IRIS REST API: http://localhost:9092
+#
+# Note: Backend and frontend services may require additional dependencies.
+# For IRIS-only usage, just run: docker compose up -d iris
+#
+# ------------------------------------------------------------------------------

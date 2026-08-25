@@ -72,7 +72,7 @@ docker-compose exec -it iris bash
 There is a basic agent in src/Sample.Agent, a simple way to use it from objectscript is to run the following (note this does require an OPENAI_API_KEY to be added to .env before running th container). 
 
 ```objectscript
-zn "IRISAPP"
+zn "AI_HUB_STUDIO"
 Set agent = ##class(Sample.Agent).%New()
 Set sc = agent.%Init()
 write:sc'=1 $SYSTEM.Status.GetErrorText(sc), !

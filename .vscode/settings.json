@@ -1,26 +1,20 @@
 {
     "files.associations": {
-
         "Dockerfile*": "dockerfile",
         "iris.script": "objectscript"
       },
     "objectscript.conn" :{
-      "active": true,
-      "ns": "IRISAPP",
-      "username": "_SYSTEM",
-      "password": "SYS",
-      "docker-compose": {
-        "service": "iris",
-        "internalPort": 52773
-      },
-      "links": {
-        "UnitTest Portal": "${serverUrl}/csp/sys/%25UnitTest.Portal.Home.cls?$NAMESPACE=IRISAPP",
-        "Error Log": "${serverUrl}/csp/sys/op/UtilSysAppErrorNamespaces.csp"
-      }
+        "active": true,
+        "ns": "USER",
+        "username": "_SYSTEM",
+        "password": "SYS",
+        "docker-compose": {
+            "service": "iris",
+            "internalPort": 52773
+        },
+        "links": {
+            "UnitTest Portal": "${serverUrl}/csp/sys/%25UnitTest.Portal.Home.cls?$NAMESPACE=AI_HUB_STUDIO"
+        }
     },
-    "intersystems.testingManager.client.relativeTestRoot": "tests",
-    "chat.tools.terminal.autoApprove": {
-      "docker exec": true
-    }
-
+    "intersystems.testingManager.client.relativeTestRoot": "tests"
 }
