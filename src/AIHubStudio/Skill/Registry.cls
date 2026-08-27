@@ -12,7 +12,7 @@ ClassMethod Count() As %Integer
 {
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("SELECT COUNT(*) as cnt FROM AIHubStudio_Skills")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit 0 }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit 0 }
     
     set result = stmt.%Execute()
     if result.%Next() {
@@ -27,7 +27,7 @@ ClassMethod List() As %String
 {
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("SELECT SkillID, SkillName, Description, ClassName, SkillType, CreatedAt FROM AIHubStudio_Skills ORDER BY SkillName")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit "[]" }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit "[]" }
     
     set result = stmt.%Execute()
     set jsonArray = []
@@ -57,10 +57,10 @@ ClassMethod Register(pSkillName As %String, pDescription As %String, pClassName 
     
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("INSERT INTO AIHubStudio_Skills (SkillID, SkillName, Description, ClassName, SkillType, CreatedAt) VALUES (?, ?, ?, ?, ?, ?)")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit "" }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit "" }
     
-    set status = stmt.%Execute(skillID, pSkillName, pDescription, pClassName, pSkillType, $ZDATE($HOROLOG,"YYYY-MM-DD HH:MM:SS"))
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Execute failed: "_stmt.%Message) $$$ThrowOnError(sc) quit "" }
+    set status = stmt.%Execute(skillID, pSkillName, pDescription, pClassName, pSkillType, $ZDATETIME($HOROLOG,3))
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Execute failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit "" }
     
     quit skillID
 }
@@ -71,7 +71,7 @@ ClassMethod Get(pSkillID As %String) As %String
 {
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("SELECT SkillID, SkillName, Description, ClassName, SkillType, CreatedAt FROM AIHubStudio_Skills WHERE SkillID = ?")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit "{}" }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit "{}" }
     
     set result = stmt.%Execute(pSkillID)
     Set obj = {}
@@ -94,14 +94,13 @@ ClassMethod GetByName(pSkillName As %String) As %String
 {
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("SELECT SkillID FROM AIHubStudio_Skills WHERE SkillName = ?")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit "{}" }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit "{}" }
     
     set result = stmt.%Execute(pSkillName)
-    Set obj = {}
     if result.%Next() {
-        Set obj = ..Get(result.SkillID)
+        quit ..Get(result.SkillID)
     }
-    quit obj.%ToJSON()
+    quit "{}"
 }
 
 /// Method: Update
@@ -110,7 +109,7 @@ ClassMethod Update(pSkillID As %String, pSkillName As %String, pDescription As %
 {
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("UPDATE AIHubStudio_Skills SET SkillName = ?, Description = ?, ClassName = ?, SkillType = ? WHERE SkillID = ?")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit 0 }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit 0 }
     
     set status = stmt.%Execute(pSkillName, pDescription, pClassName, pSkillType, pSkillID)
     quit status
@@ -120,9 +119,10 @@ ClassMethod Update(pSkillID As %String, pSkillName As %String, pDescription As %
 /// Description: Helper method to get a field value from a skill by ID
 ClassMethod GetFieldValue(pSkillID As %String, pField As %String) As %String
 {
+    if '$LISTFIND($LISTBUILD("SkillName","Description","ClassName","SkillType","CreatedAt"), pField) quit ""
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("SELECT " _ pField _ " FROM AIHubStudio_Skills WHERE SkillID = ?")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit "" }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit "" }
     
     set result = stmt.%Execute(pSkillID)
     if result.%Next() {
@@ -137,7 +137,7 @@ ClassMethod Delete(pSkillID As %String) As %Boolean
 {
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("DELETE FROM AIHubStudio_Skills WHERE SkillID = ?")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit 0 }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit 0 }
     
     set status = stmt.%Execute(pSkillID)
     quit status
@@ -147,18 +147,12 @@ ClassMethod Delete(pSkillID As %String) As %Boolean
 /// Description: Initialize skill registry and create table
 ClassMethod Initialize() As %Boolean
 {
-    #; Create counter global if not exists
     if '$DATA(^AIHubStudio.Skill.Counter) {
         set ^AIHubStudio.Skill.Counter = 0
     }
-    
-    #; Create table if not exists
-    set stmt = ##class(%SQL.Statement).%New()
-    set status = stmt.%Prepare("CREATE TABLE IF NOT EXISTS AIHubStudio_Skills (SkillID INTEGER PRIMARY KEY, SkillName VARCHAR(255) NOT NULL, Description TEXT, ClassName VARCHAR(255) NOT NULL, SkillType VARCHAR(50) DEFAULT 'knowledge', CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit 0 }
-    
-    set status = stmt.%Execute()
-    quit status
+    if ##class(AIHubStudio.Agent.Registry).TableExists("AIHubStudio_Skills") quit 1
+    set status = ##class(%SQL.Statement).%ExecDirect(, "CREATE TABLE AIHubStudio_Skills (SkillID INTEGER PRIMARY KEY, SkillName VARCHAR(255) NOT NULL, Description VARCHAR(1000), ClassName VARCHAR(255) NOT NULL, SkillType VARCHAR(50) DEFAULT 'knowledge', CreatedAt TIMESTAMP)")
+    quit $$$ISOK(status)
 }
 
 /// Method: GetStatus
@@ -178,13 +172,13 @@ ClassMethod Search(pPattern As %String) As %String
 {
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("SELECT SkillID, SkillName, Description, ClassName, SkillType, CreatedAt FROM AIHubStudio_Skills WHERE SkillName LIKE ? ORDER BY SkillName")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit "[]" }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit "[]" }
     
     set result = stmt.%Execute("%" _ pPattern _ "%")
     set jsonArray = []
     
     while result.%Next() {
-        do jsonArray.%Push(..Get(result.SkillID))
+        do jsonArray.%Push(##class(%DynamicObject).%FromJSON(..Get(result.SkillID)))
     }
     
     quit jsonArray.%ToJSON()

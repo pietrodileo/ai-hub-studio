@@ -168,7 +168,7 @@
         {
             "label": "Test: AI Hub Health Endpoint",
             "type": "shell",
-            "command": "curl -sf http://localhost:9092/ai-hub/api/health && echo \"✓ AI Hub OK\" || echo \"✗ AI Hub unreachable\"",
+            "command": "curl -sf http://localhost:9092/ai-hub/api/studio/health && echo \"✓ AI Hub OK\" || echo \"✗ AI Hub unreachable\"",
             "dependsOn": [],
             "group": "test",
             "problemMatcher": []

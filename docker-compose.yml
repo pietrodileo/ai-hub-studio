@@ -39,6 +39,7 @@ services:
       # AI Hub specific ports
       - "53773:53773"  # AI Hub WebSocket
       - "54773:54773"  # AI Hub additional REST
+      - "1234:1234"  # LM Studio port
     volumes:
       # Durable storage for IRIS databases
       # - ./storage:/durable    
@@ -74,7 +75,7 @@ services:
       context: .
       dockerfile: Dockerfile.frontend
     ports:
-      - "5173:5173"
+      - "5173:80"
     environment:
       - VITE_IRIS_HOST=iris
       - VITE_IRIS_PORT=1972

@@ -15,7 +15,7 @@ ClassMethod GetStatus() As %Status
     Set sc = $$$OK
     try {
         set status = ##class(AIHubStudio.Status).HealthCheck()
-        write status
+        write status.%ToJSON()
     } catch ex {
         Set sc = ex.AsStatus()
         write "error: "_$SYSTEM.Status.GetErrorText(sc)
@@ -30,7 +30,7 @@ ClassMethod GetDetailedStatus() As %Status
     Set sc = $$$OK
     try {
         set status = ##class(AIHubStudio.Status).GetDetailedStatus()
-        write status
+        write status.%ToJSON()
     } catch ex {
         Set sc = ex.AsStatus()
         write "error: "_$SYSTEM.Status.GetErrorText(sc)

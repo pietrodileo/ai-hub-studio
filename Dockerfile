@@ -39,7 +39,9 @@ COPY merge.cpf /home/irisowner/dev/merge.cpf
 COPY App.Installer.cls /home/irisowner/dev/App.Installer.cls
 
 # Source code
-COPY src /home/irisowner/dev/src
+# Normalize permissions while copying: host files may be mode 0600, while IRIS
+# compilation runs as irisowner. Executable bits are harmless for source files.
+COPY --chown=irisowner:irisowner --chmod=0755 src /home/irisowner/dev/src
 
 # IRIS startup script
 COPY iris.script /home/irisowner/dev/iris.script

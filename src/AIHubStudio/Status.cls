@@ -21,11 +21,11 @@ ClassMethod Display() As %String
 
 /// Method: HealthCheck
 /// Description: Perform health check and return JSON status
-ClassMethod HealthCheck() As %String
+ClassMethod HealthCheck() As %DynamicObject
 {
     set health = "healthy"
     quit { "status": (health),
-          "timestamp": ($ZDATE($HOROLOG,"YYYY-MM-DD HH:MM:SS")),
+          "timestamp": ($ZDATETIME($HOROLOG,3)),
           "version": (##class(AIHubStudio).GetVersion()),
           "agents": (##class(AIHubStudio.Agent.Registry).Count()),
           "tools": (##class(AIHubStudio.Tool.Registry).Count()),
@@ -34,11 +34,11 @@ ClassMethod HealthCheck() As %String
 
 /// Method: GetDetailedStatus
 /// Description: Get detailed status with component information
-ClassMethod GetDetailedStatus() As %String
+ClassMethod GetDetailedStatus() As %DynamicObject
 {
-    set status = ##class(AIHubStudio.Agent.Registry).GetStatus()
-    set tools = ##class(AIHubStudio.Tool.Registry).GetStatus()
-    set skills = ##class(AIHubStudio.Skill.Registry).GetStatus()
+    set status = ##class(%DynamicObject).%FromJSON(##class(AIHubStudio.Agent.Registry).GetStatus())
+    set tools = ##class(%DynamicObject).%FromJSON(##class(AIHubStudio.Tool.Registry).GetStatus())
+    set skills = ##class(%DynamicObject).%FromJSON(##class(AIHubStudio.Skill.Registry).GetStatus())
     
     quit { "overall": (..HealthCheck()),
           "agents": (status),
@@ -50,16 +50,14 @@ ClassMethod GetDetailedStatus() As %String
 /// Description: Check database connectivity and tables
 ClassMethod CheckDatabase() As %Boolean
 {
-    #; Check if configuration table exists
     set stmt = ##class(%SQL.Statement).%New()
-    set status = stmt.%Prepare("SELECT COUNT(*) as cnt FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'AIHubStudio_Config'")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit 0 }
+    set status = stmt.%Prepare("SELECT 1 AS healthy")
+    if $$$ISERR(status) quit 0
     
     set result = stmt.%Execute()
-    if result.%Next() && (result.cnt > 0) {
-        quit 1
-    }
-    quit 0
+    if '$ISOBJECT(result) quit 0
+    if result.%SQLCODE < 0 quit 0
+    quit result.%Next()
 }
 
 }

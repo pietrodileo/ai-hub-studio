@@ -150,7 +150,7 @@ ClassMethod GetProviderInfo(provider As %String) As %Status
     set sc = $$$OK
     try {
         set info = ##class(AIHubStudio.Config).GetProviderInfo(provider)
-        write ##class(%Library.JSON).%ToJSON(info)
+        write info.%ToJSON()
     } catch ex {
         Set sc = ex.AsStatus()
         write "error: "_$SYSTEM.Status.GetErrorText(sc)
@@ -184,7 +184,7 @@ ClassMethod GetSupportedProviders() As %Status
         for i = 1:1:providers.%Size() {
             do jsonArray.%Push(providers.%Get(i))
         }
-        write ##class(%Library.JSON).%ToJSON(jsonArray)
+        write jsonArray.%ToJSON()
     } catch ex {
         Set sc = ex.AsStatus()
         write "error: "_$SYSTEM.Status.GetErrorText(sc)

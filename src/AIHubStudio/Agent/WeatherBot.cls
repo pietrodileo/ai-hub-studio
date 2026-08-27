@@ -86,7 +86,7 @@ Method ExtractLocation(message As %String) As %String
     // Check for city names
     Set cities = ["new york", "london", "paris", "tokyo", "berlin", "sydney", "moscow", "beijing", "rome", "madrid"]
     
-    For i = 1:1:cities.%Size() {
+    For i = 0:1:(cities.%Size() - 1) {
         If (lowerMsg [ cities.%Get(i)) {
             Set location = cities.%Get(i)
             Return $ZCONVERT(location, "T")

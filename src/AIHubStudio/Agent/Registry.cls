@@ -12,7 +12,7 @@ ClassMethod Count() As %Integer
 {
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("SELECT COUNT(*) as cnt FROM AIHubStudio_Agents")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit 0 }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit 0 }
     
     set result = stmt.%Execute()
     if result.%Next() {
@@ -25,26 +25,33 @@ ClassMethod Count() As %Integer
 /// Description: List all registered agents as JSON array
 ClassMethod List() As %String
 {
-    set stmt = ##class(%SQL.Statement).%New()
-    set status = stmt.%Prepare("SELECT AgentID, AgentName, Description, ClassName, Provider, Model, CreatedAt FROM AIHubStudio_Agents ORDER BY AgentName")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit "[]" }
-    
-    set result = stmt.%Execute()
     set jsonArray = []
-    
-    while result.%Next() {
-        set obj = {
-            "AgentID": (result.AgentID),
-            "AgentName": (result.AgentName),
-            "Description": (result.Description),
-            "ClassName": (result.ClassName),
-            "Provider": (result.Provider),
-            "Model": (result.Model),
-            "CreatedAt": (result.CreatedAt)
+    Try {
+        set stmt = ##class(%SQL.Statement).%New()
+        set status = stmt.%Prepare("SELECT AgentID, AgentName, Description, ClassName, Provider, Model, CreatedAt FROM AIHubStudio_Agents ORDER BY AgentName")
+        if $$$ISERR(status) {
+            set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status))
+            $$$ThrowOnError(sc)
         }
-        do jsonArray.%Push(obj)
+
+        set result = stmt.%Execute()
+
+        while result.%Next() {
+            set obj = {
+                "AgentID": (result.AgentID),
+                "AgentName": (result.AgentName),
+                "Description": (result.Description),
+                "ClassName": (result.ClassName),
+                "Provider": (result.Provider),
+                "Model": (result.Model),
+                "CreatedAt": (result.CreatedAt)
+            }
+            do jsonArray.%Push(obj)
+        }
+    } catch ex {
+        Set sc = ex.AsStatus()
+        write "error: "_$SYSTEM.Status.GetErrorText(sc)
     }
-    
     quit jsonArray.%ToJSON()
 }
 
@@ -58,10 +65,10 @@ ClassMethod Register(pAgentName As %String, pDescription As %String, pClassName 
     
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("INSERT INTO AIHubStudio_Agents (AgentID, AgentName, Description, ClassName, Provider, Model, CreatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit "" }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit "" }
     
-    set status = stmt.%Execute(agentID, pAgentName, pDescription, pClassName, pProvider, pModel, $ZDATE($HOROLOG,"YYYY-MM-DD HH:MM:SS"))
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Execute failed: "_stmt.%Message) $$$ThrowOnError(sc) quit "" }
+    set status = stmt.%Execute(agentID, pAgentName, pDescription, pClassName, pProvider, pModel, $ZDATETIME($HOROLOG,3))
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Execute failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit "" }
     
     quit agentID
 }
@@ -72,7 +79,7 @@ ClassMethod Get(pAgentID As %String) As %String
 {
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("SELECT AgentID, AgentName, Description, ClassName, Provider, Model, CreatedAt FROM AIHubStudio_Agents WHERE AgentID = ?")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit "{}" }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit "{}" }
     
     set result = stmt.%Execute(pAgentID)
     Set obj = {}
@@ -96,14 +103,13 @@ ClassMethod GetByName(pAgentName As %String) As %String
 {
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("SELECT AgentID FROM AIHubStudio_Agents WHERE AgentName = ?")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit "{}" }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit "{}" }
     
     set result = stmt.%Execute(pAgentName)
-    Set obj = {}
     if result.%Next() {
-        set obj = ..Get(result.AgentID)
+        quit ..Get(result.AgentID)
     }
-    quit obj.%ToJSON()
+    quit "{}"
 }
 
 /// Method: Update
@@ -112,7 +118,7 @@ ClassMethod Update(pAgentID As %String, pAgentName As %String, pDescription As %
 {
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("UPDATE AIHubStudio_Agents SET AgentName = ?, Description = ?, ClassName = ?, Provider = ?, Model = ? WHERE AgentID = ?")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit 0 }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit 0 }
     
     // Use existing values if new ones are not provided
     if pProvider = "" { set pProvider = ..GetFieldValue(pAgentID, "Provider") }
@@ -126,9 +132,10 @@ ClassMethod Update(pAgentID As %String, pAgentName As %String, pDescription As %
 /// Description: Helper method to get a field value from an agent by ID
 ClassMethod GetFieldValue(pAgentID As %String, pField As %String) As %String
 {
+    if '$LISTFIND($LISTBUILD("AgentName","Description","ClassName","Provider","Model","CreatedAt"), pField) quit ""
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("SELECT " _ pField _ " FROM AIHubStudio_Agents WHERE AgentID = ?")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit "" }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit "" }
     
     set result = stmt.%Execute(pAgentID)
     if result.%Next() {
@@ -143,7 +150,7 @@ ClassMethod Delete(pAgentID As %String) As %Boolean
 {
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("DELETE FROM AIHubStudio_Agents WHERE AgentID = ?")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit 0 }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit 0 }
     
     set status = stmt.%Execute(pAgentID)
     quit status
@@ -153,46 +160,22 @@ ClassMethod Delete(pAgentID As %String) As %Boolean
 /// Description: Initialize agent registry and create table
 ClassMethod Initialize() As %Boolean
 {
-    #; Create counter global if not exists
     if '$DATA(^AIHubStudio.Agent.Counter) {
         set ^AIHubStudio.Agent.Counter = 0
     }
-    
-    #; Create table if not exists
+    if ..TableExists("AIHubStudio_Agents") quit 1
+    set status = ##class(%SQL.Statement).%ExecDirect(, "CREATE TABLE AIHubStudio_Agents (AgentID INTEGER PRIMARY KEY, AgentName VARCHAR(255) NOT NULL, Description VARCHAR(1000), ClassName VARCHAR(255) NOT NULL, Provider VARCHAR(50) DEFAULT 'openai', Model VARCHAR(100) DEFAULT 'gpt-4o-mini', CreatedAt TIMESTAMP)")
+    quit $$$ISOK(status)
+}
+
+ClassMethod TableExists(tableName As %String) As %Boolean
+{
     set stmt = ##class(%SQL.Statement).%New()
-    set status = stmt.%Prepare("CREATE TABLE IF NOT EXISTS AIHubStudio_Agents (AgentID INTEGER PRIMARY KEY, AgentName VARCHAR(255) NOT NULL, Description TEXT, ClassName VARCHAR(255) NOT NULL, Provider VARCHAR(50) DEFAULT 'openai', Model VARCHAR(100) DEFAULT 'gpt-4o-mini', CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit 0 }
-    
-    set status = stmt.%Execute()
-    
-    // Add Provider and Model columns if they don't exist (for existing tables)
-    set stmt2 = ##class(%SQL.Statement).%New()
-    set status = stmt2.%Prepare("PRAGMA table_info(AIHubStudio_Agents)")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt2.%Message) $$$ThrowOnError(sc) }
-    
-    set result = stmt2.%Execute()
-    set hasProvider = 0
-    set hasModel = 0
-    while result.%Next() {
-        if result.name = "Provider" { set hasProvider = 1 }
-        if result.name = "Model" { set hasModel = 1 }
-    }
-    
-    if 'hasProvider {
-        set stmt3 = ##class(%SQL.Statement).%New()
-        set status = stmt3.%Prepare("ALTER TABLE AIHubStudio_Agents ADD COLUMN Provider VARCHAR(50) DEFAULT 'openai'")
-        if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Alter failed: "_stmt3.%Message) $$$ThrowOnError(sc) }
-        set status = stmt3.%Execute()
-    }
-    
-    if 'hasModel {
-        set stmt4 = ##class(%SQL.Statement).%New()
-        set status = stmt4.%Prepare("ALTER TABLE AIHubStudio_Agents ADD COLUMN Model VARCHAR(100) DEFAULT 'gpt-4o-mini'")
-        if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Alter failed: "_stmt4.%Message) $$$ThrowOnError(sc) }
-        set status = stmt4.%Execute()
-    }
-    
-    quit status
+    set status = stmt.%Prepare("SELECT COUNT(*) AS cnt FROM INFORMATION_SCHEMA.TABLES WHERE UPPER(TABLE_NAME) = UPPER(?)")
+    if $$$ISERR(status) quit 0
+    set result = stmt.%Execute(tableName)
+    if result.%Next() quit result.cnt > 0
+    quit 0
 }
 
 /// Method: GetStatus
@@ -212,13 +195,13 @@ ClassMethod Search(pPattern As %String) As %String
 {
     set stmt = ##class(%SQL.Statement).%New()
     set status = stmt.%Prepare("SELECT AgentID, AgentName, Description, ClassName, Provider, Model, CreatedAt FROM AIHubStudio_Agents WHERE AgentName LIKE ? ORDER BY AgentName")
-    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_stmt.%Message) $$$ThrowOnError(sc) quit "[]" }
+    if $$$ISERR(status) { set sc = $$$ERROR($$$GeneralError, "SQL Prepare failed: "_$SYSTEM.Status.GetErrorText(status)) $$$ThrowOnError(sc) quit "[]" }
     
     set result = stmt.%Execute("%" _ pPattern _ "%")
     set jsonArray = []
     
     while result.%Next() {
-        do jsonArray.%Push(..Get(result.AgentID))
+        do jsonArray.%Push(##class(%DynamicObject).%FromJSON(..Get(result.AgentID)))
     }
     
     quit jsonArray.%ToJSON()

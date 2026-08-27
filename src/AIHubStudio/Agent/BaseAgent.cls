@@ -87,6 +87,7 @@ Method Chat(session As %AI.Agent.Session, message As %String, context As %Regist
 /// Description: Custom initialization logic
 Method OnInit() As %Status
 {
+    Set sc = $$$OK
     // Load provider-specific configuration
     Try {
         // If no custom API key, try to get from global config
@@ -106,14 +107,10 @@ Method OnInit() As %Status
         
         // Validate the configuration
         Set sc = ..ValidateConfiguration()
-        If $$$ISERR(sc) {
-            Return sc
-        }
     } Catch ex {
-        Return $$$ERROR($$$GeneralError, (ex.DisplayString()))
+        Set sc = ex.AsStatus()
     }
-    
-    Quit $$$OK
+    Quit sc
 }
 
 /// Method: ValidateConfiguration
@@ -125,7 +122,7 @@ Method ValidateConfiguration() As %Status
     // Check if provider is supported
     Set providers = ##class(AIHubStudio.Config).#Providers
     Set isValidProvider = 0
-    For i = 1:1:providers.%Size() {
+    For i = 0:1:(providers.%Size() - 1) {
         If providers.%Get(i) = ..Provider {
             Set isValidProvider = 1
             Quit
@@ -158,7 +155,7 @@ Method SwitchProvider(pProvider As %String, pModel As %String = "", pAPIKey As %
     // Validate provider
     Set providers = ##class(AIHubStudio.Config).#Providers
     Set isValidProvider = 0
-    For i = 1:1:providers.%Size() {
+    For i = 0:1:(providers.%Size() - 1) {
         If providers.%Get(i) = pProvider {
             Set isValidProvider = 1
             Quit
@@ -210,7 +207,7 @@ Method SwitchModel(pModel As %String) As %Status
     // Note: This is a simplified check - in production, you'd want to validate against actual API
     Set models = providerInfo.models
     Set isValidModel = 0
-    For i = 1:1:models.%Size() {
+    For i = 0:1:(models.%Size() - 1) {
         If models.%Get(i) = pModel {
             Set isValidModel = 1
             Quit
@@ -229,7 +226,7 @@ Method SwitchModel(pModel As %String) As %Status
 
 /// Method: GetAvailableModels
 /// Description: Get available models for the current provider
-Method GetAvailableModels() As %List
+Method GetAvailableModels() As %DynamicArray
 {
     Set providerInfo = ##class(AIHubStudio.Config).GetProviderInfo(..Provider)
     
@@ -245,12 +242,8 @@ Method GetAvailableModels() As %List
 /// Description: Add a custom tool to the agent
 Method AddCustomTool(toolName As %String, toolClass As %String) As %Status
 {
-    // Register the tool with the agent
-    Do ..Tools.SetAt(toolName, toolClass)
-    
-    // Also register with the global tool registry
-    Set registry = ##class(AIHubStudio.Tool.Registry).%New()
-    Set status = registry.Register(toolName, toolName _ " tool", toolClass, "function")
+    Set id = ##class(AIHubStudio.Tool.Registry).Register(toolName, toolName _ " tool", toolClass, "function")
+    Set status = $Select(id'="":$$$OK,1:$$$ERROR($$$GeneralError,"Tool registration failed"))
     
     Quit status
 }
@@ -259,12 +252,8 @@ Method AddCustomTool(toolName As %String, toolClass As %String) As %Status
 /// Description: Add a custom skill to the agent
 Method AddCustomSkill(skillName As %String, skillClass As %String) As %Status
 {
-    // Register the skill with the agent
-    Do ..Skills.SetAt(skillName, skillClass)
-    
-    // Also register with the global skill registry
-    Set registry = ##class(AIHubStudio.Skill.Registry).%New()
-    Set status = registry.Register(skillName, skillName _ " skill", skillClass, "knowledge")
+    Set id = ##class(AIHubStudio.Skill.Registry).Register(skillName, skillName _ " skill", skillClass, "knowledge")
+    Set status = $Select(id'="":$$$OK,1:$$$ERROR($$$GeneralError,"Skill registration failed"))
     
     Quit status
 }

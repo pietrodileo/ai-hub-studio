@@ -3864,3 +3864,865 @@ Deleting class %Z.IPM.Bootstraps.Main
 %SYS>
 
 %SYS>
+
+Node: 2dbb86a68c01, Instance: IRIS
+
+USER>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+Load started on 08/26/2026 16:39:39
+Loading file /usr/irissys/mgr/Temp/Fq9YzEdhPj3sKA.xml as xml
+Imported class: IPM.Installer
+Compiling class IPM.Installer
+Compiling routine IPM.Installer.1
+Load finished successfully.
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+Version of IPM in current namespace: 
+%SYS> [32mzpm [0m0.10.9
+
+RUNNING command: "repo -delete-all"
+[32mCommand "repo -delete-all" finished successfull[0m
+
+RUNNING command: "repo -reset-defaults"
+[33mWARNING: Using -password via the CLI is insecure. Use -password-stdin or -password-env.[0m
+registry
+	Source: 			https://pm.community.intersystems.com
+	Enabled?			Yes
+	Available?			Yes
+	Use for Snapshots?		Yes
+	Use for Prereleases?		Yes
+	Is Read-Only?			No
+	Default Deployment Registry? 	No
+
+registry
+	Source: 			https://pm.community.intersystems.com
+	Enabled?			Yes
+	Available?			Yes
+	Use for Snapshots?		Yes
+	Use for Prereleases?		Yes
+	Is Read-Only?			No
+	Default Deployment Registry? 	No
+
+[32mCommand "repo -reset-defaults" finished successfull[0m
+
+RUNNING command: "enable -map -repos -globally"
+Version of IPM in current namespace: 
+%SYS> [32mzpm [0m0.10.9
+Skipping IPM mapping of %SYS - IPM already installed.
+Mapping %IPM package in %SYS equivalently to AI_HUB_STUDIO
+Mapping %IPM.* routines in %SYS equivalently to AI_HUB_STUDIO
+Mapping %IPM package in %SYS equivalently to USER
+Mapping %IPM.* routines in %SYS equivalently to USER
+Skipping repository mapping of %SYS - IPM not mapped from source namespace.
+Skipping repository mapping of AI_HUB_STUDIO - IPM repositories found.
+Skipping repository mapping of USER - IPM repositories found.
+Done.
+
+[35m%SYS> [0m         [32mzpm[0m [39m0.10.9[0m
+[35mAI_HUB_STUDIO> [0m[32mzpm[0m [39m0.10.9[0m
+               [39mInstalled In: [0m%SYS 
+[35mUSER> [0m         [32mzpm[0m [39m0.10.9[0m
+               [39mInstalled In: [0m%SYS 
+[39mhttps://pm.community.intersystems.com[0m - 1.0.0
+[32mCommand "enable -map -repos -globally" finished successfull[0m
+%SYS>
+
+%SYS>
+
+%SYS>
+
+Load started on 08/26/2026 16:39:41
+Loading file /home/irisowner/dev/App.Installer.cls as udl
+Compiling class App.Installer
+Compiling routine App.Installer.1
+Load finished successfully.
+
+%SYS>
+
+%SYS>
+
+%SYS>
+2026-08-26 16:39:41 0 App.Installer: Installation starting at 2026-08-26 16:39:41, LogLevel=3
+2026-08-26 16:39:41 3 : Start manifest
+2026-08-26 16:39:41 3 Evaluate: Working directory: #{$system.Process.CurrentDirectory()} -> Working directory: /usr/irissys/mgr/
+2026-08-26 16:39:41 3 : Working directory: /usr/irissys/mgr/
+2026-08-26 16:39:41 3 SetVariable: NAMESPACE=AI_HUB_STUDIO
+2026-08-26 16:39:41 3 SetVariable: DBNAME=AI_HUB_STUDIO
+2026-08-26 16:39:41 3 SetVariable: APPPATH=/usr/irissys/mgr/
+2026-08-26 16:39:41 3 SetVariable: SOURCESPATH=/home/irisowner/dev/src/
+2026-08-26 16:39:41 3 Evaluate: %DB_${DBNAME} -> %DB_AI_HUB_STUDIO
+2026-08-26 16:39:41 3 SetVariable: RESOURCE=%DB_AI_HUB_STUDIO
+2026-08-26 16:39:41 3 Evaluate: Importing source code into namespace ${NAMESPACE} -> Importing source code into namespace AI_HUB_STUDIO
+2026-08-26 16:39:41 3 : Importing source code into namespace AI_HUB_STUDIO
+2026-08-26 16:39:41 3 Evaluate: ${NAMESPACE} -> AI_HUB_STUDIO
+2026-08-26 16:39:41 3 Evaluate: ${SOURCESPATH} -> /home/irisowner/dev/src/
+2026-08-26 16:39:41 1 Import: Loading /home/irisowner/dev/src/ (isdir=1) into AI_HUB_STUDIO, recurse=1
+
+Load of directory started on 08/26/2026 16:39:41
+
+Loading file /home/irisowner/dev/src/AIHubStudio/AIHubStudio.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Init.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Config.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Status.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/Registry.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/HelloWorld.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/MathHelper.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/BaseAgent.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/Starter.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Tool/Calculator.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Tests/StarterTest.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/WeatherBot.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Skill/Registry.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/AgentMessageService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/WebGateway.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/AgentService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/ToolService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/ConfigService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/SkillService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/StarterService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/StatusService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Tool/Registry.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Skill/WeatherKnowledge.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Tool/WeatherAPI.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Skill/BasicConversation.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Skill/Mathematics.cls as udl
+
+Compilation started on 08/26/2026 16:39:41 with qualifiers 'ck'
+Compiling 26 classes
+Compiling class AIHubStudio.AIHubStudio
+Compiling class AIHubStudio.Agent.Starter
+Compiling class AIHubStudio.Init
+Compiling class AIHubStudio.Agent.Registry
+Compiling class AIHubStudio.Config
+Compiling class AIHubStudio.Skill.Registry
+Compiling class AIHubStudio.Status
+Compiling class AIHubStudio.Tests.StarterTest
+Compiling class AIHubStudio.Tool.Calculator
+Compiling class AIHubStudio.Agent.BaseAgent
+Compiling class AIHubStudio.Tool.Registry
+Compiling class AIHubStudio.Tool.WeatherAPI
+Compiling class AIHubStudio.Skill.BasicConversation
+Compiling class AIHubStudio.Skill.Mathematics
+Compiling class AIHubStudio.Skill.WeatherKnowledge
+Compiling class AIHubStudio.REST.AgentMessageService
+Compiling class AIHubStudio.REST.ToolService
+Compiling class AIHubStudio.REST.AgentService
+Compiling class AIHubStudio.REST.ConfigService
+Compiling class AIHubStudio.REST.SkillService
+Compiling class AIHubStudio.REST.StarterService
+Compiling class AIHubStudio.REST.StatusService
+Compiling class AIHubStudio.REST.WebGateway
+Compiling class AIHubStudio.Agent.HelloWorld
+Compiling class AIHubStudio.Agent.WeatherBot
+Compiling class AIHubStudio.Agent.MathHelper
+Compiling routine AIHubStudio.AIHubStudio.1
+Compiling routine AIHubStudio.Init.1
+Compiling routine AIHubStudio.Agent.Starter.1
+Compiling routine AIHubStudio.Agent.Registry.1
+Compiling routine AIHubStudio.Status.1
+Compiling routine AIHubStudio.Skill.WeatherKnowledge.1
+Compiling routine AIHubStudio.Tool.Calculator.1
+Compiling routine AIHubStudio.Tool.Registry.1
+Compiling routine AIHubStudio.Skill.Registry.1
+Compiling routine AIHubStudio.REST.ToolService.1
+Compiling routine AIHubStudio.REST.StarterService.1
+Compiling routine AIHubStudio.Tests.StarterTest.1
+Compiling routine AIHubStudio.REST.WebGateway.1
+Compiling routine AIHubStudio.REST.AgentMessageService.1
+Compiling routine AIHubStudio.Skill.Mathematics.1
+Compiling routine AIHubStudio.Agent.BaseAgent.1
+Compiling routine AIHubStudio.REST.SkillService.1
+Compiling routine AIHubStudio.Skill.BasicConversation.1
+Compiling routine AIHubStudio.REST.AgentService.1
+Compiling routine AIHubStudio.REST.StatusService.1
+Compiling routine AIHubStudio.REST.ConfigService.1
+Compiling routine AIHubStudio.Config.1
+Compiling routine AIHubStudio.Tool.WeatherAPI.1
+Compiling routine AIHubStudio.Agent.HelloWorld.1
+Compiling routine AIHubStudio.Agent.WeatherBot.1
+Compiling routine AIHubStudio.Agent.MathHelper.1
+Compilation finished successfully in 0.098s.
+
+Load finished successfully.
+2026-08-26 16:39:41 3 Evaluate: ${NAMESPACE} -> AI_HUB_STUDIO
+
+Updating web application "/ai-hub/api/studio"...
+Web application "/ai-hub/api/studio" is updated.
+2026-08-26 16:39:41 3 : End manifest
+2026-08-26 16:39:41 0 App.Installer: Installation succeeded at 2026-08-26 16:39:41
+2026-08-26 16:39:41 0 %Installer: Elapsed time .165276s
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+Building dependency graph...Done.
+[%SYS|vscode-per-namespace-settings]	Initialize START
+[%SYS|vscode-per-namespace-settings]	Initialize SUCCESS
+[%SYS|vscode-per-namespace-settings]	Reload START (/usr/irissys/ipm/vscode-per-namespace-settings/1.0.0/)
+[%SYS|vscode-per-namespace-settings]	Reload SUCCESS
+[vscode-per-namespace-settings]	Module object refreshed.
+[%SYS|vscode-per-namespace-settings]	Validate START
+[%SYS|vscode-per-namespace-settings]	Validate SUCCESS
+[%SYS|vscode-per-namespace-settings]	Compile START
+[%SYS|vscode-per-namespace-settings]	Compile SUCCESS
+[%SYS|vscode-per-namespace-settings]	Activate START
+[%SYS|vscode-per-namespace-settings]	Configure START
+Deleting class %Z.IPM.Bootstraps.Main
+[%SYS|vscode-per-namespace-settings]	Configure SUCCESS
+[%SYS|vscode-per-namespace-settings]	Activate SUCCESS
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+Node: d7ac4e2d65f2, Instance: IRIS
+
+USER>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+Load started on 08/26/2026 20:21:48
+Loading file /usr/irissys/mgr/Temp/7VnS8QPSrEyJHQ.xml as xml
+Imported class: IPM.Installer
+Compiling class IPM.Installer
+Compiling routine IPM.Installer.1
+Load finished successfully.
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+Version of IPM in current namespace: 
+%SYS> [32mzpm [0m0.10.9
+
+RUNNING command: "repo -delete-all"
+[32mCommand "repo -delete-all" finished successfull[0m
+
+RUNNING command: "repo -reset-defaults"
+[33mWARNING: Using -password via the CLI is insecure. Use -password-stdin or -password-env.[0m
+registry
+	Source: 			https://pm.community.intersystems.com
+	Enabled?			Yes
+	Available?			Yes
+	Use for Snapshots?		Yes
+	Use for Prereleases?		Yes
+	Is Read-Only?			No
+	Default Deployment Registry? 	No
+
+registry
+	Source: 			https://pm.community.intersystems.com
+	Enabled?			Yes
+	Available?			Yes
+	Use for Snapshots?		Yes
+	Use for Prereleases?		Yes
+	Is Read-Only?			No
+	Default Deployment Registry? 	No
+
+[32mCommand "repo -reset-defaults" finished successfull[0m
+
+RUNNING command: "enable -map -repos -globally"
+Version of IPM in current namespace: 
+%SYS> [32mzpm [0m0.10.9
+Skipping IPM mapping of %SYS - IPM already installed.
+Mapping %IPM package in %SYS equivalently to AI_HUB_STUDIO
+Mapping %IPM.* routines in %SYS equivalently to AI_HUB_STUDIO
+Mapping %IPM package in %SYS equivalently to USER
+Mapping %IPM.* routines in %SYS equivalently to USER
+Skipping repository mapping of %SYS - IPM not mapped from source namespace.
+Mapping IPM repository in %SYS equivalently to AI_HUB_STUDIO
+Mapping IPM repository in %SYS equivalently to USER
+Done.
+
+[35m%SYS> [0m         [32mzpm[0m [39m0.10.9[0m
+[35mAI_HUB_STUDIO> [0m[32mzpm[0m [39m0.10.9[0m
+               [39mInstalled In: [0m%SYS 
+[35mUSER> [0m         [32mzpm[0m [39m0.10.9[0m
+               [39mInstalled In: [0m%SYS 
+[39mhttps://pm.community.intersystems.com[0m - 1.0.0
+[32mCommand "enable -map -repos -globally" finished successfull[0m
+%SYS>
+
+%SYS>
+
+%SYS>
+
+Load started on 08/26/2026 20:21:50
+Loading file /home/irisowner/dev/App.Installer.cls as udl
+Compiling class App.Installer
+Compiling routine App.Installer.1
+Load finished successfully.
+
+%SYS>
+
+%SYS>
+
+%SYS>
+2026-08-26 20:21:50 0 App.Installer: Installation starting at 2026-08-26 20:21:50, LogLevel=3
+2026-08-26 20:21:50 3 : Start manifest
+2026-08-26 20:21:50 3 Evaluate: Working directory: #{$system.Process.CurrentDirectory()} -> Working directory: /usr/irissys/mgr/
+2026-08-26 20:21:50 3 : Working directory: /usr/irissys/mgr/
+2026-08-26 20:21:50 3 SetVariable: NAMESPACE=AI_HUB_STUDIO
+2026-08-26 20:21:50 3 SetVariable: DBNAME=AI_HUB_STUDIO
+2026-08-26 20:21:50 3 SetVariable: APPPATH=/usr/irissys/mgr/
+2026-08-26 20:21:50 3 SetVariable: SOURCESPATH=/home/irisowner/dev/src/
+2026-08-26 20:21:50 3 Evaluate: %DB_${DBNAME} -> %DB_AI_HUB_STUDIO
+2026-08-26 20:21:50 3 SetVariable: RESOURCE=%DB_AI_HUB_STUDIO
+2026-08-26 20:21:50 3 Evaluate: Importing source code into namespace ${NAMESPACE} -> Importing source code into namespace AI_HUB_STUDIO
+2026-08-26 20:21:50 3 : Importing source code into namespace AI_HUB_STUDIO
+2026-08-26 20:21:50 3 Evaluate: ${NAMESPACE} -> AI_HUB_STUDIO
+2026-08-26 20:21:50 3 Evaluate: ${SOURCESPATH} -> /home/irisowner/dev/src/
+2026-08-26 20:21:50 1 Import: Loading /home/irisowner/dev/src/ (isdir=1) into AI_HUB_STUDIO, recurse=1
+
+Load of directory started on 08/26/2026 20:21:50
+
+Loading file /home/irisowner/dev/src/AIHubStudio/AIHubStudio.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Status.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/AI/Agent.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/AI/MCP.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Init.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/AI/Manager.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/AI/Provider.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Config.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/HelloWorld.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/BaseAgent.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/Starter.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/MathHelper.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/WeatherBot.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/AI/ToolSet.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/AI/Tool.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/AgentToolSet.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/ToolSet.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/AgentTool.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/Registry.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/Tool.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/MCP.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/ToolSetTool.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/Agent.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/Provider.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/AgentService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/AgentMessageService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/StarterService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/StatusService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/SkillService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/ConfigService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/ToolService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Skill/BasicConversation.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Tests/StarterTest.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Tool/Calculator.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Skill/Mathematics.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Tool/Registry.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/WebGateway.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Skill/Registry.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Skill/WeatherKnowledge.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Tool/WeatherAPI.cls as udl
+
+Compilation started on 08/26/2026 20:21:51 with qualifiers 'ck'
+Compiling 40 classes
+Compiling class AIHubStudio.AIHubStudio
+Compiling class AIHubStudio.AI.Manager
+Compiling class AIHubStudio.Agent.Starter
+Compiling class AIHubStudio.Init
+Compiling class AIHubStudio.Agent.Registry
+Compiling class AIHubStudio.AI.MCP
+Compiling class AIHubStudio.AI.ToolSet
+Compiling class AIHubStudio.AI.Tool
+Compiling class AIHubStudio.AI.Agent
+Compiling class AIHubStudio.Config
+Compiling class AIHubStudio.AI.Provider
+Compiling class AIHubStudio.Agent.BaseAgent
+Compiling class AIHubStudio.Skill.Mathematics
+Compiling class AIHubStudio.Skill.Registry
+Compiling class AIHubStudio.Skill.WeatherKnowledge
+Compiling class AIHubStudio.Status
+Compiling class AIHubStudio.Tests.StarterTest
+Compiling class AIHubStudio.Tool.Calculator
+Compiling class AIHubStudio.Tool.Registry
+Compiling class AIHubStudio.Metadata.AgentToolSet
+Compiling class AIHubStudio.Tool.WeatherAPI
+Compiling class AIHubStudio.Metadata.Provider
+Compiling class AIHubStudio.Metadata.Agent
+Compiling class AIHubStudio.Metadata.Tool
+Compiling class AIHubStudio.Metadata.MCP
+Compiling class AIHubStudio.REST.ToolService
+Compiling class AIHubStudio.REST.SkillService
+Compiling class AIHubStudio.REST.ConfigService
+Compiling class AIHubStudio.Skill.BasicConversation
+Compiling class AIHubStudio.REST.AgentService
+Compiling class AIHubStudio.REST.AgentMessageService
+Compiling class AIHubStudio.Metadata.ToolSet
+Compiling class AIHubStudio.REST.StarterService
+Compiling class AIHubStudio.Metadata.AgentTool
+Compiling class AIHubStudio.Metadata.ToolSetTool
+Compiling class AIHubStudio.REST.WebGateway
+Compiling class AIHubStudio.REST.StatusService
+Compiling class AIHubStudio.Agent.WeatherBot
+Compiling class AIHubStudio.Agent.MathHelper
+Compiling class AIHubStudio.Agent.HelloWorld
+Compiling table AIHubStudio_Metadata.AgentTool
+Compiling table AIHubStudio_Metadata.AgentToolSet
+Compiling table AIHubStudio_Metadata.ToolSetTool
+Compiling table AIHubStudio_Metadata.MCP
+Compiling table AIHubStudio_Metadata.ToolSet
+Compiling table AIHubStudio_Metadata.Agent
+Compiling table AIHubStudio_Metadata.Tool
+Compiling table AIHubStudio_Metadata.Provider
+Compiling routine AIHubStudio.AIHubStudio.1
+Compiling routine AIHubStudio.Init.1
+Compiling routine AIHubStudio.Agent.Starter.1
+Compiling routine AIHubStudio.Agent.Registry.1
+Compiling routine AIHubStudio.Config.1
+Compiling routine AIHubStudio.AI.Manager.1
+Compiling routine AIHubStudio.AI.ToolSet.1
+Compiling routine AIHubStudio.AI.Tool.1
+Compiling routine AIHubStudio.AI.MCP.1
+Compiling routine AIHubStudio.AI.Provider.1
+Compiling routine AIHubStudio.AI.Agent.1
+Compiling routine AIHubStudio.REST.SkillService.1
+Compiling routine AIHubStudio.REST.AgentService.1
+Compiling routine AIHubStudio.REST.ConfigService.1
+Compiling routine AIHubStudio.Agent.BaseAgent.1
+Compiling routine AIHubStudio.REST.AgentMessageService.1
+Compiling routine AIHubStudio.REST.StatusService.1
+Compiling routine AIHubStudio.REST.StarterService.1
+Compiling routine AIHubStudio.REST.ToolService.1
+Compiling routine AIHubStudio.Status.1
+Compiling routine AIHubStudio.Skill.BasicConversation.1
+Compiling routine AIHubStudio.Skill.Mathematics.1
+Compiling routine AIHubStudio.Tests.StarterTest.1
+Compiling routine AIHubStudio.Skill.Registry.1
+Compiling routine AIHubStudio.REST.WebGateway.1
+Compiling routine AIHubStudio.Tool.Calculator.1
+Compiling routine AIHubStudio.Skill.WeatherKnowledge.1
+Compiling routine AIHubStudio.Tool.Registry.1
+Compiling routine AIHubStudio.Tool.WeatherAPI.1
+Compiling routine AIHubStudio.Metadata.AgentToolSet.1
+Compiling routine AIHubStudio.Metadata.AgentTool.1
+Compiling routine AIHubStudio.Metadata.MCP.1
+Compiling routine AIHubStudio.Metadata.Tool.1
+Compiling routine AIHubStudio.Metadata.Agent.1
+Compiling routine AIHubStudio.Metadata.Provider.1
+Compiling routine AIHubStudio.Metadata.ToolSet.1
+Compiling routine AIHubStudio.Metadata.ToolSetTool.1
+Compiling routine AIHubStudio.Agent.HelloWorld.1
+Compiling routine AIHubStudio.Agent.WeatherBot.1
+Compiling routine AIHubStudio.Agent.MathHelper.1
+Compilation finished successfully in 0.165s.
+
+Load finished successfully.
+2026-08-26 20:21:51 3 Evaluate: ${NAMESPACE} -> AI_HUB_STUDIO
+
+Updating web application "/ai-hub/api/studio"...
+Web application "/ai-hub/api/studio" is updated.
+2026-08-26 20:21:51 3 : End manifest
+2026-08-26 20:21:51 0 App.Installer: Installation succeeded at 2026-08-26 20:21:51
+2026-08-26 20:21:51 0 %Installer: Elapsed time .227522s
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+Building dependency graph...Done.
+[%SYS|vscode-per-namespace-settings]	Initialize START
+[%SYS|vscode-per-namespace-settings]	Initialize SUCCESS
+[%SYS|vscode-per-namespace-settings]	Reload START (/usr/irissys/ipm/vscode-per-namespace-settings/1.0.0/)
+[%SYS|vscode-per-namespace-settings]	Reload SUCCESS
+[vscode-per-namespace-settings]	Module object refreshed.
+[%SYS|vscode-per-namespace-settings]	Validate START
+[%SYS|vscode-per-namespace-settings]	Validate SUCCESS
+[%SYS|vscode-per-namespace-settings]	Compile START
+[%SYS|vscode-per-namespace-settings]	Compile SUCCESS
+[%SYS|vscode-per-namespace-settings]	Activate START
+[%SYS|vscode-per-namespace-settings]	Configure START
+Deleting class %Z.IPM.Bootstraps.Main
+[%SYS|vscode-per-namespace-settings]	Configure SUCCESS
+[%SYS|vscode-per-namespace-settings]	Activate SUCCESS
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+Node: 7c3edf9bcbab, Instance: IRIS
+
+USER>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+Load started on 08/26/2026 20:42:36
+Loading file /usr/irissys/mgr/Temp/itxNpJs1cICjzA.xml as xml
+Imported class: IPM.Installer
+Compiling class IPM.Installer
+Compiling routine IPM.Installer.1
+Load finished successfully.
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+Version of IPM in current namespace: 
+%SYS> [32mzpm [0m0.10.9
+
+RUNNING command: "repo -delete-all"
+[32mCommand "repo -delete-all" finished successfull[0m
+
+RUNNING command: "repo -reset-defaults"
+[33mWARNING: Using -password via the CLI is insecure. Use -password-stdin or -password-env.[0m
+registry
+	Source: 			https://pm.community.intersystems.com
+	Enabled?			Yes
+	Available?			Yes
+	Use for Snapshots?		Yes
+	Use for Prereleases?		Yes
+	Is Read-Only?			No
+	Default Deployment Registry? 	No
+
+registry
+	Source: 			https://pm.community.intersystems.com
+	Enabled?			Yes
+	Available?			Yes
+	Use for Snapshots?		Yes
+	Use for Prereleases?		Yes
+	Is Read-Only?			No
+	Default Deployment Registry? 	No
+
+[32mCommand "repo -reset-defaults" finished successfull[0m
+
+RUNNING command: "enable -map -repos -globally"
+Version of IPM in current namespace: 
+%SYS> [32mzpm [0m0.10.9
+Skipping IPM mapping of %SYS - IPM already installed.
+Mapping %IPM package in %SYS equivalently to AI_HUB_STUDIO
+Mapping %IPM.* routines in %SYS equivalently to AI_HUB_STUDIO
+Mapping %IPM package in %SYS equivalently to USER
+Mapping %IPM.* routines in %SYS equivalently to USER
+Skipping repository mapping of %SYS - IPM not mapped from source namespace.
+Mapping IPM repository in %SYS equivalently to AI_HUB_STUDIO
+Mapping IPM repository in %SYS equivalently to USER
+Done.
+
+[35m%SYS> [0m         [32mzpm[0m [39m0.10.9[0m
+[35mAI_HUB_STUDIO> [0m[32mzpm[0m [39m0.10.9[0m
+               [39mInstalled In: [0m%SYS 
+[35mUSER> [0m         [32mzpm[0m [39m0.10.9[0m
+               [39mInstalled In: [0m%SYS 
+[39mhttps://pm.community.intersystems.com[0m - 1.0.0
+[32mCommand "enable -map -repos -globally" finished successfull[0m
+%SYS>
+
+%SYS>
+
+%SYS>
+
+Load started on 08/26/2026 20:42:38
+Loading file /home/irisowner/dev/App.Installer.cls as udl
+Compiling class App.Installer
+Compiling routine App.Installer.1
+Load finished successfully.
+
+%SYS>
+
+%SYS>
+
+%SYS>
+2026-08-26 20:42:38 0 App.Installer: Installation starting at 2026-08-26 20:42:38, LogLevel=3
+2026-08-26 20:42:38 3 : Start manifest
+2026-08-26 20:42:38 3 Evaluate: Working directory: #{$system.Process.CurrentDirectory()} -> Working directory: /usr/irissys/mgr/
+2026-08-26 20:42:38 3 : Working directory: /usr/irissys/mgr/
+2026-08-26 20:42:38 3 SetVariable: NAMESPACE=AI_HUB_STUDIO
+2026-08-26 20:42:38 3 SetVariable: DBNAME=AI_HUB_STUDIO
+2026-08-26 20:42:38 3 SetVariable: APPPATH=/usr/irissys/mgr/
+2026-08-26 20:42:38 3 SetVariable: SOURCESPATH=/home/irisowner/dev/src/
+2026-08-26 20:42:38 3 Evaluate: %DB_${DBNAME} -> %DB_AI_HUB_STUDIO
+2026-08-26 20:42:38 3 SetVariable: RESOURCE=%DB_AI_HUB_STUDIO
+2026-08-26 20:42:38 3 Evaluate: Importing source code into namespace ${NAMESPACE} -> Importing source code into namespace AI_HUB_STUDIO
+2026-08-26 20:42:38 3 : Importing source code into namespace AI_HUB_STUDIO
+2026-08-26 20:42:38 3 Evaluate: ${NAMESPACE} -> AI_HUB_STUDIO
+2026-08-26 20:42:38 3 Evaluate: ${SOURCESPATH} -> /home/irisowner/dev/src/
+2026-08-26 20:42:38 1 Import: Loading /home/irisowner/dev/src/ (isdir=1) into AI_HUB_STUDIO, recurse=1
+
+Load of directory started on 08/26/2026 20:42:38
+
+Loading file /home/irisowner/dev/src/AIHubStudio/Status.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Config.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Test.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/AI/Provider.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/AIHubStudio.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/AI/MCP.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/BaseAgent.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Init.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/Registry.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/MathHelper.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/AI/Tool.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/AgentTool.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/Agent.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/MCP.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/WeatherBot.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/HelloWorld.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/Tool.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/AI/Agent.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/AI/ToolSet.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Agent/Starter.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/ToolSet.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/AgentToolSet.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/AgentMessageService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/ConfigService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/AI/Manager.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/Provider.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/StatusService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/ToolService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Metadata/ToolSetTool.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/StarterService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Tool/Calculator.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Skill/Registry.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Skill/WeatherKnowledge.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Skill/Mathematics.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Tool/Registry.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/AgentService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Skill/BasicConversation.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/SkillService.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Tool/WeatherAPI.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/Tests/StarterTest.cls as udl
+Loading file /home/irisowner/dev/src/AIHubStudio/REST/WebGateway.cls as udl
+
+Compilation started on 08/26/2026 20:42:38 with qualifiers 'ck'
+Compiling 41 classes
+Compiling class AIHubStudio.AIHubStudio
+Compiling class AIHubStudio.AI.Manager
+Compiling class AIHubStudio.Agent.Starter
+Compiling class AIHubStudio.Init
+Compiling class AIHubStudio.Agent.Registry
+Compiling class AIHubStudio.AI.ToolSet
+Compiling class AIHubStudio.AI.MCP
+Compiling class AIHubStudio.AI.Tool
+Compiling class AIHubStudio.Config
+Compiling class AIHubStudio.AI.Agent
+Compiling class AIHubStudio.AI.Provider
+Compiling class AIHubStudio.Agent.BaseAgent
+Compiling class AIHubStudio.Skill.BasicConversation
+Compiling class AIHubStudio.Skill.Registry
+Compiling class AIHubStudio.Skill.WeatherKnowledge
+Compiling class AIHubStudio.Status
+Compiling class AIHubStudio.Test
+Compiling class AIHubStudio.Tests.StarterTest
+Compiling class AIHubStudio.Tool.Calculator
+Compiling class AIHubStudio.Metadata.ToolSet
+Compiling class AIHubStudio.Tool.Registry
+Compiling class AIHubStudio.Metadata.AgentToolSet
+Compiling class AIHubStudio.Tool.WeatherAPI
+Compiling class AIHubStudio.Metadata.AgentTool
+Compiling class AIHubStudio.Metadata.Provider
+Compiling class AIHubStudio.Metadata.MCP
+Compiling class AIHubStudio.Metadata.Agent
+Compiling class AIHubStudio.Skill.Mathematics
+Compiling class AIHubStudio.REST.StatusService
+Compiling class AIHubStudio.REST.ConfigService
+Compiling class AIHubStudio.Metadata.ToolSetTool
+Compiling class AIHubStudio.REST.ToolService
+Compiling class AIHubStudio.REST.AgentMessageService
+Compiling class AIHubStudio.REST.StarterService
+Compiling class AIHubStudio.Metadata.Tool
+Compiling class AIHubStudio.REST.WebGateway
+Compiling class AIHubStudio.REST.AgentService
+Compiling class AIHubStudio.REST.SkillService
+Compiling class AIHubStudio.Agent.WeatherBot
+Compiling class AIHubStudio.Agent.HelloWorld
+Compiling class AIHubStudio.Agent.MathHelper
+Compiling table AIHubStudio_Metadata.MCP
+Compiling table AIHubStudio_Metadata.Tool
+Compiling table AIHubStudio_Metadata.ToolSetTool
+Compiling table AIHubStudio_Metadata.ToolSet
+Compiling table AIHubStudio_Metadata.AgentToolSet
+Compiling table AIHubStudio_Metadata.AgentTool
+Compiling table AIHubStudio_Metadata.Agent
+Compiling table AIHubStudio_Metadata.Provider
+Compiling routine AIHubStudio.AIHubStudio.1
+Compiling routine AIHubStudio.Init.1
+Compiling routine AIHubStudio.Agent.Starter.1
+Compiling routine AIHubStudio.Config.1
+Compiling routine AIHubStudio.Agent.Registry.1
+Compiling routine AIHubStudio.AI.Manager.1
+Compiling routine AIHubStudio.REST.AgentMessageService.1
+Compiling routine AIHubStudio.AI.ToolSet.1
+Compiling routine AIHubStudio.AI.Tool.1
+Compiling routine AIHubStudio.AI.Provider.1
+Compiling routine AIHubStudio.AI.MCP.1
+Compiling routine AIHubStudio.REST.AgentService.1
+Compiling routine AIHubStudio.REST.ConfigService.1
+Compiling routine AIHubStudio.Agent.BaseAgent.1
+Compiling routine AIHubStudio.REST.SkillService.1
+Compiling routine AIHubStudio.AI.Agent.1
+Compiling routine AIHubStudio.REST.StarterService.1
+Compiling routine AIHubStudio.REST.StatusService.1
+Compiling routine AIHubStudio.Skill.BasicConversation.1
+Compiling routine AIHubStudio.Status.1
+Compiling routine AIHubStudio.Test.1
+Compiling routine AIHubStudio.Skill.Mathematics.1
+Compiling routine AIHubStudio.Skill.WeatherKnowledge.1
+Compiling routine AIHubStudio.REST.ToolService.1
+Compiling routine AIHubStudio.REST.WebGateway.1
+Compiling routine AIHubStudio.Skill.Registry.1
+Compiling routine AIHubStudio.Tests.StarterTest.1
+Compiling routine AIHubStudio.Tool.Calculator.1
+Compiling routine AIHubStudio.Tool.Registry.1
+Compiling routine AIHubStudio.Tool.WeatherAPI.1
+Compiling routine AIHubStudio.Metadata.AgentToolSet.1
+Compiling routine AIHubStudio.Metadata.AgentTool.1
+Compiling routine AIHubStudio.Metadata.Provider.1
+Compiling routine AIHubStudio.Metadata.ToolSetTool.1
+Compiling routine AIHubStudio.Metadata.ToolSet.1
+Compiling routine AIHubStudio.Metadata.MCP.1
+Compiling routine AIHubStudio.Metadata.Tool.1
+Compiling routine AIHubStudio.Metadata.Agent.1
+Compiling routine AIHubStudio.Agent.HelloWorld.1
+Compiling routine AIHubStudio.Agent.MathHelper.1
+Compiling routine AIHubStudio.Agent.WeatherBot.1
+Compilation finished successfully in 0.168s.
+
+Load finished successfully.
+2026-08-26 20:42:38 3 Evaluate: ${NAMESPACE} -> AI_HUB_STUDIO
+
+Updating web application "/ai-hub/api/studio"...
+Web application "/ai-hub/api/studio" is updated.
+2026-08-26 20:42:38 3 : End manifest
+2026-08-26 20:42:38 0 App.Installer: Installation succeeded at 2026-08-26 20:42:38
+2026-08-26 20:42:38 0 %Installer: Elapsed time .242522s
+
+%SYS>
+
+%SYS>
+
+%SYS>
+
+Building dependency graph...Done.
+[%SYS|vscode-per-namespace-settings]	Initialize START
+[%SYS|vscode-per-namespace-settings]	Initialize SUCCESS
+[%SYS|vscode-per-namespace-settings]	Reload START (/usr/irissys/ipm/vscode-per-namespace-settings/1.0.0/)
+[%SYS|vscode-per-namespace-settings]	Reload SUCCESS
+[vscode-per-namespace-settings]	Module object refreshed.
+[%SYS|vscode-per-namespace-settings]	Validate START
+[%SYS|vscode-per-namespace-settings]	Validate SUCCESS
+[%SYS|vscode-per-namespace-settings]	Compile START
+[%SYS|vscode-per-namespace-settings]	Compile SUCCESS
+[%SYS|vscode-per-namespace-settings]	Activate START
+[%SYS|vscode-per-namespace-settings]	Configure START
+Deleting class %Z.IPM.Bootstraps.Main
+[%SYS|vscode-per-namespace-settings]	Configure SUCCESS
+[%SYS|vscode-per-namespace-settings]	Activate SUCCESS
+%SYS>
+
+%SYS>
+
+%SYS>
+
+%SYS>

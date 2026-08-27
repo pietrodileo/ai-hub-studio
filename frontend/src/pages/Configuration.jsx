@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle2, XCircle, Key, Globe, Brain, Settings } from 'lucide-react';
+import { CheckCircle2, XCircle, Globe, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:52773/api';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
+
+const Card = ({ children }) => <section className="card">{children}</section>;
+const CardHeader = ({ children }) => <header className="mb-4">{children}</header>;
+const CardTitle = ({ children, className = '' }) => <h2 className={`text-lg font-semibold ${className}`}>{children}</h2>;
+const CardDescription = ({ children }) => <p className="text-sm text-gray-500">{children}</p>;
+const CardContent = ({ children, className = '' }) => <div className={className}>{children}</div>;
+const Label = ({ children, ...props }) => <label className="block text-sm font-medium text-gray-700" {...props}>{children}</label>;
+const Input = (props) => <input className="w-full rounded-md border border-gray-300 px-3 py-2" {...props} />;
+const Button = ({ children, variant = 'primary', ...props }) => {
+  const variants = {
+    primary: 'bg-blue-600 text-white',
+    outline: 'border border-gray-300 bg-white text-gray-700',
+    destructive: 'bg-red-600 text-white',
+    secondary: 'bg-gray-200 text-gray-800'
+  };
+  return <button className={`rounded-md px-3 py-2 text-sm disabled:opacity-50 ${variants[variant]}`} {...props}>{children}</button>;
+};
 
 // Supported providers with their models
 const PROVIDERS = {
@@ -234,28 +244,28 @@ export default function Configuration() {
           </p>
         </div>
 
-        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="providers">
+        <div className="space-y-4">
+          <div className="flex gap-2">
+            <Button variant={activeTab === 'providers' ? 'primary' : 'outline'} onClick={() => setActiveTab('providers')}>
               <Globe className="mr-2 h-4 w-4" />
               AI Providers
-            </TabsTrigger>
-            <TabsTrigger value="settings">
+            </Button>
+            <Button variant={activeTab === 'settings' ? 'primary' : 'outline'} onClick={() => setActiveTab('settings')}>
               <Settings className="mr-2 h-4 w-4" />
               Settings
-            </TabsTrigger>
-          </TabsList>
+            </Button>
+          </div>
 
           {/* Providers Tab */}
-          <TabsContent value="providers" className="space-y-4">
-            <Alert>
+          {activeTab === 'providers' && <div className="space-y-4">
+            <div className="rounded-md border border-blue-200 bg-blue-50 p-4">
               <CheckCircle2 className="h-4 w-4" />
-              <AlertTitle>Security Notice</AlertTitle>
-              <AlertDescription>
+              <h3 className="font-semibold">Security Notice</h3>
+              <p className="text-sm text-gray-600">
                 API keys are stored securely and are never transmitted to the client. 
                 All validation happens server-side.
-              </AlertDescription>
-            </Alert>
+              </p>
+            </div>
 
             <div className="space-y-4">
               {Object.entries(PROVIDERS).map(([provider, info]) => (
@@ -308,18 +318,9 @@ export default function Configuration() {
                         <Label htmlFor={`model-${provider}`}>
                           Default Model
                         </Label>
-                        <Select defaultValue={apiKeys[provider]?.defaultModel || info.models[0]}>
-                          <SelectTrigger id={`model-${provider}`}>
-                            <SelectValue placeholder="Select a model" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {info.models.map((model) => (
-                              <SelectItem key={model} value={model}>
-                                {model}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <select id={`model-${provider}`} defaultValue={apiKeys[provider]?.defaultModel || info.models[0]} className="w-full rounded-md border border-gray-300 px-3 py-2">
+                          {info.models.map((model) => <option key={model} value={model}>{model}</option>)}
+                        </select>
                       </div>
                     </div>
                     
@@ -360,10 +361,10 @@ export default function Configuration() {
                 </Card>
               ))}
             </div>
-          </TabsContent>
+          </div>}
 
           {/* Settings Tab */}
-          <TabsContent value="settings" className="space-y-4">
+          {activeTab === 'settings' && <div className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle>General Settings</CardTitle>
@@ -374,26 +375,17 @@ export default function Configuration() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>Default AI Provider</Label>
-                  <Select value={defaultProvider} onValueChange={handleSetDefaultProvider}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select default provider" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(PROVIDERS).map(([provider, info]) => (
-                        <SelectItem key={provider} value={provider}>
-                          {info.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select value={defaultProvider} onChange={(event) => handleSetDefaultProvider(event.target.value)} className="w-full rounded-md border border-gray-300 px-3 py-2">
+                    {Object.entries(PROVIDERS).map(([provider, info]) => <option key={provider} value={provider}>{info.name}</option>)}
+                  </select>
                   <p className="text-sm text-muted-foreground">
                     This provider will be used by default for new agents
                   </p>
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
+          </div>}
+        </div>
       </div>
     </div>
   );

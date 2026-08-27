@@ -16,7 +16,7 @@ ClassMethod SendMessage(id As %String, message As %String) As %Status
     try {
         // Get agent information
         set agentInfo = ##class(AIHubStudio.Agent.Registry).Get(id)
-        set agentObj = agentInfo.%FromJSON()
+        set agentObj = ##class(%DynamicObject).%FromJSON(agentInfo)
         
         if (agentObj = {}) {
             $$$ThrowOnError($$$ERROR($$$GeneralError, "Agent not found"))
@@ -63,7 +63,7 @@ ClassMethod StartConversation(id As %String) As %Status
     try {
         // Get agent information
         set agentInfo = ##class(AIHubStudio.Agent.Registry).Get(id)
-        set agentObj = agentInfo.%FromJSON()
+        set agentObj = ##class(%DynamicObject).%FromJSON(agentInfo)
         
         if (agentObj = {}) {
             $$$ThrowOnError($$$ERROR($$$GeneralError, "Agent not found"))

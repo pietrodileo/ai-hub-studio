@@ -25,7 +25,7 @@ XData setup
   <Invoke Class="App.Installer" Method="RegisterWebApplication" CheckStatus="1" Return="restsc"> 
     <Arg Value="${NAMESPACE}"/>
     <Arg Value="/ai-hub/api/studio"/>
-    <Arg Value="EnsLib.REST.GenericService"/>
+    <Arg Value="AIHubStudio.REST.WebGateway"/>
     <Arg Value="REST API to handle messages"/>
     <Arg Value="1"/>
   </Invoke>
@@ -42,7 +42,7 @@ ClassMethod setup(ByRef pVars, pLogLevel As %Integer = 3, pInstaller As %Install
 }
 
 /// Create a web application with a specified path and dispatch class in the desired namespace
-ClassMethod RegisterWebApplication(pNameSpace As %String = "NAMESPACENAME", pName As %String = "/wspath", pClassName As %String = "EnsLib.REST.GenericService", pDescription As %String = "REST API to handle messages", verbose As %Boolean = 0) As %Status
+ClassMethod RegisterWebApplication(pNameSpace As %String = "NAMESPACENAME", pName As %String = "/wspath", pClassName As %String = "AIHubStudio.REST.WebGateway", pDescription As %String = "REST API to handle messages", verbose As %Boolean = 0) As %Status
 {
     New $Namespace
     Set $Namespace = "%SYS"

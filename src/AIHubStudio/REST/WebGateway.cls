@@ -71,8 +71,9 @@ XData UrlMap
 /// Description: Handle CORS preflight requests
 ClassMethod OnPreDispatch(pUrl As %String, pMethod As %String) As %Status
 {
+    set %response.ContentType = "application/json"
+    do ..HandleCorsRequest()
     if pMethod = "OPTIONS" {
-        do ..HandleCorsRequest()
         Return $$$OK
     }
     Return $$$OK

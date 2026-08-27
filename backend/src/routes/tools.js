@@ -13,7 +13,7 @@ const { irisRequest } = require('../config/iris');
  */
 router.get('/', async (req, res) => {
   try {
-    const response = await irisRequest('GET', '/ai-hub/api/tools');
+    const response = await irisRequest('GET', '/ai-hub/api/studio/tools');
     res.json(response);
   } catch (error) {
     console.error('Failed to get tools:', error.message);
@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const response = await irisRequest('GET', `/ai-hub/api/tools/${id}`);
+    const response = await irisRequest('GET', `/ai-hub/api/studio/tools/${id}`);
     res.json(response);
   } catch (error) {
     console.error(`Failed to get tool ${req.params.id}:`, error.message);
@@ -56,7 +56,7 @@ router.post('/', async (req, res) => {
       });
     }
     
-    const response = await irisRequest('POST', '/ai-hub/api/tools', {
+    const response = await irisRequest('POST', '/ai-hub/api/studio/tools', {
       ToolName,
       Description: Description || '',
       ClassName,
@@ -82,7 +82,7 @@ router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { ToolName, Description, ClassName, ToolType } = req.body;
     
-    const response = await irisRequest('PUT', `/ai-hub/api/tools/${id}`, {
+    const response = await irisRequest('PUT', `/ai-hub/api/studio/tools/${id}`, {
       ToolName,
       Description,
       ClassName,
@@ -106,7 +106,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const response = await irisRequest('DELETE', `/ai-hub/api/tools/${id}`);
+    const response = await irisRequest('DELETE', `/ai-hub/api/studio/tools/${id}`);
     res.json(response);
   } catch (error) {
     console.error(`Failed to delete tool ${req.params.id}:`, error.message);

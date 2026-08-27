@@ -22,11 +22,11 @@ ClassMethod RunAllTests() As %Status
         set status = status && ..TestExampleConversations()
         set status = status && ..TestStarterGuide()
         
-        if $$$ISOK(status) {
+        if status {
             write "All tests PASSED!",!
         } else {
             write "Some tests FAILED!",!
-            $$$ThrowOnError(sc)
+            set sc = $$$ERROR($$$GeneralError, "One or more starter tests failed")
         }
     } catch ex {
         Set sc = ex.AsStatus()
@@ -60,14 +60,14 @@ ClassMethod TestTemplateRetrieval() As %Boolean
     write "Testing template retrieval... "
     
     set templates = ##class(AIHubStudio.Agent.Starter).GetTemplates()
-    set templateList = templates.%FromJSON()
+    set templateList = ##class(%DynamicArray).%FromJSON(templates)
     
     if (templateList.%Size() = 3) {
         write "PASSED (Found " _ templateList.%Size() _ " templates)",!
         
         #; Test individual template access
         set helloTemplate = ##class(AIHubStudio.Agent.Starter).GetTemplate("hello_world")
-        set helloObj = helloTemplate.%FromJSON()
+        set helloObj = ##class(%DynamicObject).%FromJSON(helloTemplate)
         
         if (helloObj.name = "Hello World Agent") {
             write "  Individual template access: PASSED",!
@@ -98,7 +98,7 @@ ClassMethod TestAgentCreation() As %Boolean
         
         #; Verify agent was registered
         set agent = ##class(AIHubStudio.Agent.Registry).Get(agentId)
-        set agentObj = agent.%FromJSON()
+        set agentObj = ##class(%DynamicObject).%FromJSON(agent)
         
         if (agentObj.AgentName = "Test Hello Agent") {
             write "  Agent registration: PASSED",!
@@ -122,7 +122,7 @@ ClassMethod TestExampleConversations() As %Boolean
     write "Testing example conversations... "
     
     set conversation = ##class(AIHubStudio.Agent.Starter).GetExampleConversation("hello_world")
-    set convList = conversation.%FromJSON()
+    set convList = ##class(%DynamicArray).%FromJSON(conversation)
     
     if (convList.%Size() >= 2) {
         write "PASSED (Generated " _ convList.%Size() _ " conversation turns)",!
@@ -142,7 +142,7 @@ ClassMethod TestStarterGuide() As %Boolean
     write "Testing starter guide generation... "
     
     set guide = ##class(AIHubStudio.Agent.Starter).GetStarterGuide()
-    set guideObj = guide.%FromJSON()
+    set guideObj = ##class(%DynamicObject).%FromJSON(guide)
     
     if (guideObj.steps.%Size() = 5) {
         write "PASSED (Guide has " _ guideObj.steps.%Size() _ " steps)",!

@@ -25,29 +25,90 @@ ClassMethod Evaluate(expression As %String) As %String
 /// Description: Evaluate a mathematical expression string
 ClassMethod EvaluateExpression(expression As %String) As %Double
 {
-    // Use a simple parser for basic arithmetic
-    // This handles +, -, *, /, ^ with proper precedence
-    
-    // First, handle parentheses
-    While (expression [ "(") {
-        Set openPos = $Find(expression, "(")
-        Set closePos = ..FindMatchingParen(expression, openPos)
-        If (closePos = 0) {
-            Return 0
-        }
-        
-        Set inner = $Extract(expression, openPos + 1, closePos - openPos - 1)
-        Set innerResult = ..EvaluateExpression(inner)
-        
-        Set expression = $Extract(expression, 1, openPos - 1) _ innerResult _ $Extract(expression, closePos + 1, *)
+    Set position = 1
+    Set value = ..ParseExpression(expression, .position)
+    If position <= $Length(expression) {
+        $$$ThrowStatus($$$ERROR($$$GeneralError, "Unexpected token at position " _ position))
     }
-    
-    // Evaluate with operator precedence: ^, * /, + -
-    Set expression = ..EvaluateOperator(expression, "^")
-    Set expression = ..EvaluateOperator(expression, "* /")
-    Set expression = ..EvaluateOperator(expression, "+ -")
-    
-    Quit +expression
+    Quit value
+}
+
+ClassMethod ParseExpression(expression As %String, ByRef position As %Integer) As %Double
+{
+    Set value = ..ParseTerm(expression, .position)
+    While position <= $Length(expression) {
+        Set operator = $Extract(expression, position)
+        If (operator '= "+") && (operator '= "-") Quit
+        Set position = position + 1
+        Set right = ..ParseTerm(expression, .position)
+        If operator = "+" Set value = value + right
+        Else  Set value = value - right
+    }
+    Quit value
+}
+
+ClassMethod ParseTerm(expression As %String, ByRef position As %Integer) As %Double
+{
+    Set value = ..ParsePower(expression, .position)
+    While position <= $Length(expression) {
+        Set operator = $Extract(expression, position)
+        If (operator '= "*") && (operator '= "/") Quit
+        Set position = position + 1
+        Set right = ..ParsePower(expression, .position)
+        If operator = "*" {
+            Set value = value * right
+        } Else {
+            If right = 0 $$$ThrowStatus($$$ERROR($$$GeneralError, "Division by zero"))
+            Set value = value / right
+        }
+    }
+    Quit value
+}
+
+ClassMethod ParsePower(expression As %String, ByRef position As %Integer) As %Double
+{
+    Set value = ..ParseFactor(expression, .position)
+    If $Extract(expression, position) = "^" {
+        Set position = position + 1
+        Set value = value ** ..ParsePower(expression, .position)
+    }
+    Quit value
+}
+
+ClassMethod ParseFactor(expression As %String, ByRef position As %Integer) As %Double
+{
+    Set character = $Extract(expression, position)
+    If character = "+" {
+        Set position = position + 1
+        Quit ..ParseFactor(expression, .position)
+    }
+    If character = "-" {
+        Set position = position + 1
+        Quit -..ParseFactor(expression, .position)
+    }
+    If character = "(" {
+        Set position = position + 1
+        Set value = ..ParseExpression(expression, .position)
+        If $Extract(expression, position) '= ")" {
+            $$$ThrowStatus($$$ERROR($$$GeneralError, "Missing closing parenthesis"))
+        }
+        Set position = position + 1
+        Quit value
+    }
+    Set start = position
+    While position <= $Length(expression) {
+        Set character = $Extract(expression, position)
+        If "0123456789." '[ character Quit
+        Set position = position + 1
+    }
+    If position = start {
+        $$$ThrowStatus($$$ERROR($$$GeneralError, "Number expected at position " _ position))
+    }
+    Set number = $Extract(expression, start, position - 1)
+    If $Length(number, ".") > 2 {
+        $$$ThrowStatus($$$ERROR($$$GeneralError, "Invalid number " _ number))
+    }
+    Quit +number
 }
 
 /// Method: FindMatchingParen
@@ -146,23 +207,17 @@ ClassMethod ApplyOp(left As %Double, op As %String, right As %Double) As %Double
 /// Description: Clean the expression for safe evaluation
 ClassMethod CleanExpression(expression As %String) As %String
 {
-    // Remove potentially dangerous characters
-    Set cleanExpr = expression
-    
-    // Remove whitespace
-    Set cleanExpr = $Translate(cleanExpr, " ", "")
-    
-    // Remove any non-math characters (basic safety)
-    Set allowedChars = "0123456789+-*/().^,"
+    Set allowedChars = "0123456789+-*/().^"
     Set result = ""
-    
-    For i = 1:1:$Length(cleanExpr) {
-        Set char = $Extract(cleanExpr, i)
+    For i = 1:1:$Length(expression) {
+        Set char = $Extract(expression, i)
         If (allowedChars [ char) {
             Set result = result _ char
+        } ElseIf ($ASCII(char) '= 9) && ($ASCII(char) '= 10) && ($ASCII(char) '= 13) && (char '= " ") {
+            $$$ThrowStatus($$$ERROR($$$GeneralError, "Invalid character at position " _ i))
         }
     }
-    
+    If result = "" $$$ThrowStatus($$$ERROR($$$GeneralError, "Expression is empty"))
     Return result
 }
 

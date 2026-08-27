@@ -72,6 +72,16 @@ app.get('/health', (req, res) => {
   });
 });
 
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    service: 'iris-ai-hub-backend',
+    version: '1.0.0',
+    uptime: process.uptime()
+  });
+});
+
 // API info endpoint
 app.get('/api-info', (req, res) => {
   res.json({

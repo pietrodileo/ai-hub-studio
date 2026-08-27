@@ -11,7 +11,7 @@ Class AIHubStudio.Agent.Starter
 ClassMethod GetTemplatesObject() As %Library.DynamicObject
 {
     set templates = {}
-    set templates("hello_world") = {
+    do templates.%Set("hello_world", {
         "name": "Hello World Agent",
         "description": "A simple agent that greets users",
         "className": "AIHubStudio.Agent.HelloWorld",
@@ -19,8 +19,8 @@ ClassMethod GetTemplatesObject() As %Library.DynamicObject
         "tools": [],
         "prompt": "You are a friendly greeting agent. Respond to user greetings with a warm welcome message.",
         "exampleInputs": ["Hello", "Hi there", "Greetings"]
-    }
-    set templates("weather_bot") = {
+    })
+    do templates.%Set("weather_bot", {
         "name": "Weather Bot",
         "description": "An agent that provides weather information",
         "className": "AIHubStudio.Agent.WeatherBot",
@@ -28,8 +28,8 @@ ClassMethod GetTemplatesObject() As %Library.DynamicObject
         "tools": ["weather_api"],
         "prompt": "You are a weather information agent. Provide accurate weather information based on user location requests.",
         "exampleInputs": ["What's the weather in New York?", "Will it rain in London tomorrow?"]
-    }
-    set templates("math_helper") = {
+    })
+    do templates.%Set("math_helper", {
         "name": "Math Helper",
         "description": "An agent that helps with mathematical calculations",
         "className": "AIHubStudio.Agent.MathHelper",
@@ -37,7 +37,7 @@ ClassMethod GetTemplatesObject() As %Library.DynamicObject
         "tools": ["calculator"],
         "prompt": "You are a mathematics assistant. Help users solve math problems and explain concepts.",
         "exampleInputs": ["What is 25 * 4 + 10?", "How do I solve quadratic equations?"]
-    }
+    })
     quit templates
 }
 
@@ -45,9 +45,11 @@ ClassMethod GetTemplatesObject() As %Library.DynamicObject
 /// Description: Initialize the starter templates
 ClassMethod Initialize() As %Boolean
 {
-    // Templates are now managed via GetTemplatesObject() method
-    // No initialization needed as they are static
-    quit 1
+    set status = ##class(AIHubStudio.Agent.Registry).Initialize()
+    if 'status quit 0
+    set status = ##class(AIHubStudio.Tool.Registry).Initialize()
+    if 'status quit 0
+    quit ##class(AIHubStudio.Skill.Registry).Initialize()
 }
 
 /// Method: GetTemplates
@@ -56,12 +58,9 @@ ClassMethod GetTemplates() As %String
 {
     set templates = ..GetTemplatesObject()
     set result = []
-    set key = ""
-    
-    for {
-        set key = $ORDER(templates(key))
-        quit:key=""
-        do result.%Push(templates(key))
+    set iterator = templates.%GetIterator()
+    while iterator.%GetNext(.key, .template) {
+        do result.%Push(template)
     }
     
     quit result.%ToJSON()
@@ -72,8 +71,8 @@ ClassMethod GetTemplates() As %String
 ClassMethod GetTemplate(templateName As %String) As %String
 {
     set templates = ..GetTemplatesObject()
-    if $DATA(templates(templateName)) {
-        quit templates(templateName).%ToJSON()
+    if templates.%IsDefined(templateName) {
+        quit templates.%Get(templateName).%ToJSON()
     }
     quit "{}"
 }
@@ -83,11 +82,11 @@ ClassMethod GetTemplate(templateName As %String) As %String
 ClassMethod CreateAgentFromTemplate(templateName As %String, agentName As %String, description As %String = "") As %String
 {
     set templates = ..GetTemplatesObject()
-    if '$DATA(templates(templateName)) {
+    if 'templates.%IsDefined(templateName) {
         quit ""
     }
     
-    set template = templates(templateName)
+    set template = templates.%Get(templateName)
     
     #; Use provided description or default from template
     if (description = "") {
@@ -111,13 +110,13 @@ ClassMethod CreateAgentFromTemplate(templateName As %String, agentName As %Strin
     }
     
     #; Register required skills
-    for i=1:1:template.skills.%Size() {
+    for i=0:1:(template.skills.%Size()-1) {
         set skillName = template.skills.%Get(i)
         do ##class(AIHubStudio.Skill.Registry).Register(skillName, skillName _ " skill", "AIHubStudio.Skill." _ skillName, "knowledge")
     }
     
     #; Register required tools
-    for i=1:1:template.tools.%Size() {
+    for i=0:1:(template.tools.%Size()-1) {
         set toolName = template.tools.%Get(i)
         do ##class(AIHubStudio.Tool.Registry).Register(toolName, toolName _ " tool", "AIHubStudio.Tool." _ toolName, "function")
     }
@@ -186,14 +185,14 @@ ClassMethod GetStarterGuide() As %String
 ClassMethod GetExampleConversation(templateName As %String) As %String
 {
     set templates = ..GetTemplatesObject()
-    if '$DATA(templates(templateName)) {
+    if 'templates.%IsDefined(templateName) {
         quit "[]"
     }
     
-    set template = templates(templateName)
+    set template = templates.%Get(templateName)
     set conversation = []
     
-    for i=1:1:template.exampleInputs.%Size() {
+    for i=0:1:(template.exampleInputs.%Size()-1) {
         set userInput = template.exampleInputs.%Get(i)
         set response = "Example response to: " _ userInput
         
