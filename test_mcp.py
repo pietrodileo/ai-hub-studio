@@ -1,53 +1,28 @@
 import asyncio
 import base64
+import os
+
 from langchain_mcp_adapters.client import MultiServerMCPClient
 
 
-AUTH_HEADER = base64.b64encode(b"SuperUser:SYS").decode("utf-8")
-async def get_tools():
+async def main():
+    user = os.environ["APP_USER"]
+    password = os.environ["APP_PASS"]
+    token = base64.b64encode(f"{user}:{password}".encode()).decode()
     client = MultiServerMCPClient(
         {
-            "sample": {
+            "iris_data": {
                 "transport": "http",
-                "url": "http://localhost:8080/mcp/sample",
-                "headers": {"Authorization": f"Basic {AUTH_HEADER}"},
+                "url": "http://localhost:8080/mcp/data",
+                "headers": {"Authorization": f"Basic {token}"},
             }
         }
     )
-
     tools = await client.get_tools()
-    
-    for tool in tools: 
-        print("- ", tool.name)
-    print("Available MCP tools:")
-    
-    for tool in sorted(tools, key=lambda item: item.name):
-        if tool.name == "mcp_sample_GetPeopleYoungerThan":
-            try:
-                out = await tool.ainvoke({"Age": 30})
-                print(out)
-            except Exception as e:
-                print(f"Error invoking {tool.name}: {e}")
-        elif tool.name == "mcp_sample_multiply":
-            try:
-                out = await tool.ainvoke({"a": 5, "b": 7})
-                print(out)
-            except Exception as e:
-                print(f"Error invoking {tool.name}: {e}")
-        
-    return tools 
-
-async def main():
-    tools = await get_tools()
-    # print(tools)
-    if tools== [] or tools is None:
-        print("No tools available. Exiting.")
-        return
+    if not tools:
+        raise RuntimeError("No MCP tools discovered")
+    print("Discovered:", ", ".join(sorted(tool.name for tool in tools)))
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-
-

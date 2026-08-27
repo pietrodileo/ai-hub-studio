@@ -1,11 +1,16 @@
 [[iris]]
 name = "local"
-server = { host = "localhost", port = 1972, username = "SuperUser", password = "SYS" }
+server = { host = "localhost", port = 1972, username = "@{env:WG_USER}", password = "@{env:WG_PASS}" }
 endpoints = [
-    {path = "/mcp/sample" }
+    { path = "/mcp/data", username = "@{env:APP_USER}", password = "@{env:APP_PASS}" }
 ]
 
 [mcp]
 transport = "http"
-port=8080
-host="0.0.0.0"
+port = 8080
+host = "0.0.0.0"
+
+[logging]
+level = "info"
+output = "file"
+file = "/tmp/iris-ai-hub-mcp.log"

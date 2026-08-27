@@ -130,40 +130,31 @@ Method GetProviderInfo() As %DynamicObject
         "enabled": (..Enabled)
     }
     
-    // Add models based on type
+    // Model inventories change frequently. Only persisted/discovered defaults
+    // are returned; callers must not rely on hardcoded provider model names.
+    Set info.models = []
     If ..Type = "anthropic" {
-        Set info.models = ["claude-3-sonnet", "claude-3-haiku", "claude-3-opus", "claude-2"]
         Set info.apiKeyFormat = "sk-ant-..."
         Set info.requiresKey = 1
     }
     ElseIf ..Type = "openai" {
-        Set info.models = ["gpt-4o", "gpt-4o-mini", "gpt-3.5-turbo"]
         Set info.apiKeyFormat = "sk-..."
         Set info.requiresKey = 1
     }
     ElseIf ..Type = "openai-compatible" {
-        Set info.models = []
         Set info.apiKeyFormat = "varies"
         Set info.requiresKey = 1
         Set info.customEndpoint = 1
     }
     ElseIf ..Type = "azure" {
-        Set info.models = ["gpt-4o", "gpt-35-turbo"]
         Set info.apiKeyFormat = "alphanumeric"
         Set info.requiresKey = 1
     }
     ElseIf ..Type = "google" {
-        Set info.models = ["gemini-1.5-pro", "gemini-1.5-flash"]
         Set info.apiKeyFormat = "base64-like"
         Set info.requiresKey = 1
     }
-    ElseIf ..Type = "local" {
-        Set info.models = ["llama3.2", "mistral", "phi3"]
-        Set info.apiKeyFormat = "none"
-        Set info.requiresKey = 0
-    }
     ElseIf ..Type = "ollama" {
-        Set info.models = []
         Set info.apiKeyFormat = "none"
         Set info.requiresKey = 0
         Set info.customEndpoint = 1
@@ -184,6 +175,13 @@ ClassMethod GetByName(pName As %String) As AIHubStudio.Metadata.Provider
         Set provider = $$$NULLOREF
     }
     Quit provider
+}
+
+/// Check whether a provider exists without exposing persistence internals.
+ClassMethod Exists(pName As %String) As %Boolean
+{
+    Set provider = ..GetByName(pName)
+    Quit $ISOBJECT(provider)
 }
 
 /// ClassMethod: ListAll

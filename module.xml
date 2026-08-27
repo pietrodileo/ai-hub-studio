@@ -2,14 +2,13 @@
 <Export generator="Cache" version="25">
   <Document name="ai-hub-dev-template.ZPM">
     <Module>
-      <Name>ai-hub-dev-template</Name>
-      <Version>2.0.9</Version>
-      <Description>AI Hub Development Template</Description>
+      <Name>iris-ai-hub-studio</Name>
+      <Version>2.0.0</Version>
+      <Description>Generic AI Hub agent playground and secure MCP data toolkit</Description>
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>
-      <Resource Name="Sample.PKG"/>
-      <Invoke Method="Populate" Class="Sample.Person"/>
-      <Invoke Method="Run" Class="Sample.MCPSetup"/>
+      <Resource Name="AIHubStudio.PKG"/>
+      <Invoke Method="Run" Class="AIHubStudio.Setup"/>
     </Module>
   </Document>
 </Export>

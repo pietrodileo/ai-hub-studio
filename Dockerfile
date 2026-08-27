@@ -15,12 +15,9 @@ FROM docker.iscinternal.com/docker-intersystems/intersystems/iris-community:2026
 
 ARG NAMESPACE="AI_HUB_STUDIO"
 
-# Embedded Python environment
 ENV IRISUSERNAME "_SYSTEM"
 ENV IRISPASSWORD "SYS"
 ENV IRISNAMESPACE $NAMESPACE
-ENV PYTHON_PATH=/usr/irissys/bin/
-ENV PYTHONPATH="/usr/irissys/lib/python"
 ENV PATH "/usr/irissys/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/irisowner/bin"
 
 WORKDIR /home/irisowner/dev
@@ -29,8 +26,7 @@ WORKDIR /home/irisowner/dev
 # Copy application source and scripts
 # ------------------------------------------------------------------------------
 
-# Requirements for Python packages
-COPY requirements.txt /home/irisowner/dev/requirements.txt
+COPY config_http.toml /home/irisowner/dev/config_http.toml
 
 # CPF merge file for namespace and database setup
 COPY merge.cpf /home/irisowner/dev/merge.cpf
@@ -45,14 +41,6 @@ COPY --chown=irisowner:irisowner --chmod=0755 src /home/irisowner/dev/src
 
 # IRIS startup script
 COPY iris.script /home/irisowner/dev/iris.script
-
-# ------------------------------------------------------------------------------
-# Python environment setup
-# ------------------------------------------------------------------------------
-
-RUN python3 -m venv "/home/irisowner/.venvs/mcp-tools" && \
-   "/home/irisowner/.venvs/mcp-tools/bin/python" -m pip install -r /home/irisowner/dev/requirements.txt --break-system-packages --target /usr/irissys/mgr/python && \
-   "/home/irisowner/.venvs/mcp-tools/bin/python" -m pip install typing-extensions --upgrade --break-system-packages --target /usr/irissys/mgr/python
 
 # ------------------------------------------------------------------------------
 # IRIS setup: merge CPF, import code, create databases

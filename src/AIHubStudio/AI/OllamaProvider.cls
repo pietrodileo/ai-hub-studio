@@ -1,21 +1,41 @@
-/// Factory for Ollama through the OpenAI-compatible AI Hub provider.
+/// Ollama provider facade and runtime adapter.
 /// Ollama is not a native %AI.Provider name. The AI Hub SDK guide requires
 /// using provider "openai" with Ollama's /v1 compatibility endpoint.
-Class AIHubStudio.AI.OllamaProvider Extends %RegisteredObject
+Class AIHubStudio.AI.OllamaProvider Extends AIHubStudio.AI.Provider
 {
 
 Parameter DEFAULTENDPOINT = "http://host.docker.internal:11434/v1/";
 
-/// Create an Ollama-backed %AI.Provider.
+/// Create Ollama provider metadata facade. Call Save() to persist it.
+ClassMethod Create(name As %String, type As %String = "ollama") As AIHubStudio.AI.Provider
+{
+    Set provider = ..%New()
+    Set provider.Name = name
+    Set provider.Type = "ollama"
+    Set provider.Endpoint = ..#DEFAULTENDPOINT
+    Set provider.Enabled = 1
+    Set provider.IsNew = 1
+    Quit provider
+}
+
+/// Create Ollama-backed %AI.Provider from this facade's configuration.
 /// apiKey is required by the OpenAI adapter but is not validated by Ollama
 /// unless authentication has explicitly been enabled in front of Ollama.
-ClassMethod Create(Output runtimeProvider As %AI.Provider, endpoint As %String = "", apiKey As %String = "ollama") As %Status
+Method CreateRuntime(Output runtimeProvider As %AI.Provider) As %Status
 {
     Set sc = $$$OK
     Set runtimeProvider = $$$NULLOREF
 
+    If '..Enabled {
+        Quit $$$ERROR($$$GeneralError, "Provider '" _ ..Name _ "' is disabled")
+    }
+
     Try {
-        Set endpoint = ..NormalizeEndpoint(endpoint)
+        Set endpoint = ..NormalizeEndpoint(..Endpoint)
+        Set apiKey = ..APIKey
+        If (apiKey = "") && (..CredentialName '= "") {
+            Set apiKey = $SYSTEM.Util.GetEnviron(..CredentialName)
+        }
         If apiKey = "" Set apiKey = "ollama"
 
         Set settings = {}
@@ -23,32 +43,6 @@ ClassMethod Create(Output runtimeProvider As %AI.Provider, endpoint As %String =
         Do settings.%Set("api_key", apiKey)
 
         Set runtimeProvider = ##class(%AI.Provider).Create("openai", settings)
-    } Catch ex {
-        Set sc = ex.AsStatus()
-    }
-
-    Quit sc
-}
-
-/// Create a ready-to-use runtime agent backed by Ollama.
-ClassMethod CreateAgent(Output runtimeAgent As %AI.Agent, model As %String, systemPrompt As %String = "", endpoint As %String = "", apiKey As %String = "ollama") As %Status
-{
-    Set sc = $$$OK
-    Set runtimeAgent = $$$NULLOREF
-
-    If model = "" {
-        Quit $$$ERROR($$$GeneralError, "Ollama model is required")
-    }
-
-    Set sc = ..Create(.runtimeProvider, endpoint, apiKey)
-    If $$$ISERR(sc) {
-        Quit sc
-    }
-
-    Try {
-        Set runtimeAgent = ##class(%AI.Agent).%New(runtimeProvider)
-        Set runtimeAgent.Model = model
-        Set runtimeAgent.SystemPrompt = systemPrompt
     } Catch ex {
         Set sc = ex.AsStatus()
     }

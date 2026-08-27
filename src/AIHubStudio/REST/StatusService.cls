@@ -23,36 +23,6 @@ ClassMethod GetStatus() As %Status
     Return sc
 }
 
-/// Method: GetDetailedStatus
-/// Description: Get detailed system status
-ClassMethod GetDetailedStatus() As %Status
-{
-    Set sc = $$$OK
-    try {
-        set status = ##class(AIHubStudio.Status).GetDetailedStatus()
-        write status.%ToJSON()
-    } catch ex {
-        Set sc = ex.AsStatus()
-        write "error: "_$SYSTEM.Status.GetErrorText(sc)
-    }
-    Return sc
-}
-
-/// Method: CheckDatabase
-/// Description: Check database connectivity
-ClassMethod CheckDatabase() As %Status
-{
-    Set sc = $$$OK
-    try {
-        set status = ##class(AIHubStudio.Status).CheckDatabase()
-        write {"databaseStatus": ($SELECT(status: "healthy", 1: "unhealthy"))}
-    } catch ex {
-        Set sc = ex.AsStatus()
-        write "error: "_$SYSTEM.Status.GetErrorText(sc)
-    }
-    Return sc
-}
-
 /// Method: OnPreDispatch
 /// Description: Handle CORS preflight requests
 ClassMethod OnPreDispatch(pUrl As %String, pMethod As %String) As %Status

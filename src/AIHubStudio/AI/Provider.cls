@@ -64,7 +64,11 @@ ClassMethod Open(name As %String) As AIHubStudio.AI.Provider
         Quit $$$NULLOREF
     }
     
-    Set provider = ..%New()
+    If metadata.Type = "ollama" {
+        Set provider = ##class(AIHubStudio.AI.OllamaProvider).%New()
+    } Else {
+        Set provider = ..%New()
+    }
     Set provider.Metadata = metadata
     Set provider.Name = metadata.Name
     Set provider.Type = metadata.Type
@@ -75,6 +79,42 @@ ClassMethod Open(name As %String) As AIHubStudio.AI.Provider
     Set provider.IsNew = 0
     
     Quit provider
+}
+
+/// Build the AI Hub SDK runtime provider from saved facade configuration.
+/// Provider-specific wrappers may override this method when translation is
+/// required, as Ollama does for the OpenAI-compatible SDK adapter.
+Method CreateRuntime(Output runtimeProvider As %AI.Provider) As %Status
+{
+    Set sc = $$$OK
+    Set runtimeProvider = $$$NULLOREF
+
+    If ..Type = "" {
+        Quit $$$ERROR($$$GeneralError, "Provider type is required")
+    }
+    If '..Enabled {
+        Quit $$$ERROR($$$GeneralError, "Provider '" _ ..Name _ "' is disabled")
+    }
+
+    Set sdkProviderName = ..Type
+    If ..Type = "openai-compatible" Set sdkProviderName = "openai"
+
+    Set settings = {}
+    If ..Endpoint '= "" Do settings.%Set("base_url", ..Endpoint)
+
+    Set apiKey = ..APIKey
+    If (apiKey = "") && (..CredentialName '= "") {
+        Set apiKey = $SYSTEM.Util.GetEnviron(..CredentialName)
+    }
+    If apiKey '= "" Do settings.%Set("api_key", apiKey)
+
+    Try {
+        Set runtimeProvider = ##class(%AI.Provider).Create(sdkProviderName, settings)
+    } Catch ex {
+        Set sc = ex.AsStatus()
+    }
+
+    Quit sc
 }
 
 /// Method: Exists
@@ -100,7 +140,7 @@ ClassMethod Delete(name As %String) As %Status
         Return $$$ERROR($$$GeneralError, "Provider '_name_' not found")
     }
     
-    Set sc = metadata.%Delete()
+    Set sc = ##class(AIHubStudio.Metadata.Provider).%Delete(metadata.%Oid())
     If $$$ISERR(sc) {
         Return sc
     }
@@ -266,28 +306,11 @@ Method GetProviderInfo() As %DynamicObject
         "enabled": (..Enabled)
     }
     
-    // Add models based on type
-    If ..Type = "anthropic" {
-        Set info.models = ["claude-3-sonnet", "claude-3-haiku", "claude-3-opus", "claude-2"]
-    }
-    ElseIf ..Type = "openai" {
-        Set info.models = ["gpt-4o", "gpt-4o-mini", "gpt-3.5-turbo"]
-    }
-    ElseIf ..Type = "openai-compatible" {
-        Set info.models = []
+    Set info.models = []
+    If ..Type = "openai-compatible" {
         Set info.customEndpoint = 1
     }
-    ElseIf ..Type = "azure" {
-        Set info.models = ["gpt-4o", "gpt-35-turbo"]
-    }
-    ElseIf ..Type = "google" {
-        Set info.models = ["gemini-1.5-pro", "gemini-1.5-flash"]
-    }
-    ElseIf ..Type = "local" {
-        Set info.models = ["llama3.2", "mistral", "phi3"]
-    }
     ElseIf ..Type = "ollama" {
-        Set info.models = []
         Set info.requiresKey = 0
         Set info.customEndpoint = 1
         Set info.sdkProvider = "openai"

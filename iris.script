@@ -1,9 +1,8 @@
+    // Unexpire passwords for development mode
     zn "%SYS"
+    Do ##class(Security.Users).UnExpireUserPasswords("*")
+    write "Passwords unexpired for all users",!
 
-    // Unexpire passwords and set up passwordless mode to simplify dev use.
-    // ** Comment out these two line for Production use **
-    do ##class(Security.Users).UnExpireUserPasswords("*")
-    
     set tURL = "https://pm.community.intersystems.com/packages/zpm/latest/installer"
     set r = ##class(%Net.HttpRequest).%New()
     set r.Server = "pm.community.intersystems.com"
@@ -19,15 +18,15 @@
 
     zpm "enable -community"
 
-    // Load App.Installer class first
-    do $system.OBJ.Load("/home/irisowner/dev/App.Installer.cls","ck")
-
-    // Run App.Installer setup to create namespace, databases, and import classes
-    do ##class(App.Installer).setup()
+    set sc=$SYSTEM.OBJ.Load("/home/irisowner/dev/App.Installer.cls","ck")
+    if $SYSTEM.Status.IsError(sc) write $SYSTEM.Status.GetErrorText(sc),!
+    set sc=##class(App.Installer).setup()
+    if $SYSTEM.Status.IsError(sc) write $SYSTEM.Status.GetErrorText(sc),!
 
     // Create /_vscode web app to support intersystems-community.testingmanager VS Code extension
     zpm "install vscode-per-namespace-settings"
 
     // Configure %UnitTest in AI_HUB_STUDIO to suit the VS Code extension
     set ^UnitTestRoot="/usr/irissys/.vscode/AI_HUB_STUDIO/UnitTestRoot"
+
     halt

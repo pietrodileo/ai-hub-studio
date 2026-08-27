@@ -80,7 +80,7 @@ ClassMethod Delete(name As %String) As %Status
         Return $$$ERROR($$$GeneralError, "ToolSet '_name_' not found")
     }
     
-    Set sc = metadata.%Delete()
+    Set sc = ##class(AIHubStudio.Metadata.ToolSet).%Delete(metadata.%Oid())
     If $$$ISERR(sc) {
         Return sc
     }

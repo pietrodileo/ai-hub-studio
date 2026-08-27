@@ -4,3 +4,6 @@ iris-main.log
 .git
 **.tar.gz
 **.tar
+logs/
+frontend/node_modules/
+frontend/dist/

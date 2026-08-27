@@ -1,71 +1,84 @@
 Class AIHubStudio.Test Extends %RegisteredObject
 {
-    
-ClassMethod InitAgent(Output runtimeAgent As %AI.Agent) As %Status
+ClassMethod RunAll() As %Status
 {
-    // Test method implementation
-    Set saved=##class(AIHubStudio.AI.Agent).Open("MistralAssistant")
-    Set providerMetadata=##class(AIHubStudio.AI.Provider).Open(saved.Provider)
-    Set apiKey=$SYSTEM.Util.GetEnviron(providerMetadata.CredentialName)
-    Set settings = {"base_url": (providerMetadata.Endpoint)}
-    Set customProviderName = "nim"
-    Set runtimeProvider=##class(%AI.Provider).Create(customProviderName, settings)
-    Set runtimeAgent=##class(%AI.Agent).%New(runtimeProvider)
-    Set runtimeAgent.Model=saved.Model
-    Set runtimeAgent.SystemPrompt=saved.Instructions
-    Return $$$OK
+    Set sc = ##class(AIHubStudio.Setup).Run()
+    If $$$ISERR(sc) Quit sc
+    Set catalog = ##class(AIHubStudio.Runtime.AgentCatalog).List()
+    If catalog.%Size() < 2 Quit $$$ERROR($$$GeneralError,"Expected native and metadata agents")
+    Set tool = ##class(AIHubStudio.Tool.DataAccess).%New()
+    Set result = tool.FindCustomers("",2)
+    If result.%Get("row_count",0) '= 2 Quit $$$ERROR($$$GeneralError,"SQL row limit failed")
+    Set result = tool.ReadSampleGlobal("^AIHubStudio.Sample",2,10)
+    If result.%Get("count",0) < 1 Quit $$$ERROR($$$GeneralError,"Allowlisted global read failed")
+    Set sc = ..TestCustomProvider()
+    If $$$ISERR(sc) Quit sc
+    Set sc = ..TestCustomAgent()
+    If $$$ISERR(sc) Quit sc
+    Quit $$$OK
 }
 
-ClassMethod InitOllamaAgent() As %Status
+/// Verify creation, persistence, reopening and deletion of a custom provider.
+/// No network request is performed and no credential value is persisted.
+ClassMethod TestCustomProvider() As %Status
 {
-    Set sc = $$$OK
-    Set sc=##class(AIHubStudio.AI.OllamaProvider).CreateAgent(.agent,"lms-lmstudio-community-qwen3-8-27b-gguf-qwen3-8-27b-q4-k-m:latest","You are concise.")
-    Write $SYSTEM.Status.GetErrorText(sc),!
+    Set name = "TestOpenAICompatible"
+    If ##class(AIHubStudio.AI.Provider).Exists(name) Set cleanup = ##class(AIHubStudio.AI.Provider).Delete(name)
 
-    Set session=agent.CreateSession()
-    Set response=agent.Chat(session,"Hello!")
-    Write response.Content,!    
+    Set provider = ##class(AIHubStudio.AI.Provider).Create(name,"openai-compatible")
+    Do provider.Endpoint("http://example.invalid/v1/")
+    Do provider.APIKeyFromEnvironment("TEST_PROVIDER_API_KEY")
+    Do provider.DefaultModel("test-model")
+    Set sc = provider.Save()
+    If $$$ISOK(sc) {
+        Set saved = ##class(AIHubStudio.AI.Provider).Open(name)
+        If '$ISOBJECT(saved) Set sc = $$$ERROR($$$GeneralError,"Custom provider could not be reopened")
+    }
+    If $$$ISOK(sc), saved.Type '= "openai-compatible" Set sc = $$$ERROR($$$GeneralError,"Custom provider type was not persisted")
+    If $$$ISOK(sc), saved.CredentialName '= "TEST_PROVIDER_API_KEY" Set sc = $$$ERROR($$$GeneralError,"Credential environment name was not persisted")
+    If $$$ISOK(sc), saved.GetProviderInfo().%IsDefined("apiKey") Set sc = $$$ERROR($$$GeneralError,"Provider JSON exposed an API key")
+
+    Set cleanup = ##class(AIHubStudio.AI.Provider).Delete(name)
+    If $$$ISOK(sc), $$$ISERR(cleanup) Set sc = cleanup
+    If $$$ISOK(sc), ##class(AIHubStudio.AI.Provider).Exists(name) Set sc = $$$ERROR($$$GeneralError,"Custom provider cleanup failed")
     Quit sc
 }
 
-ClassMethod InitLocalAgent(Output runtimeAgent As %AI.Agent) As %Status
+/// Verify creation, catalog discovery, runtime construction and deletion of a
+/// metadata-defined agent using the existing generic provider framework.
+ClassMethod TestCustomAgent() As %Status
 {
-    Set sc = $$$OK
-
-    Try {
-        Set settings = {}
-        Do settings.%Set("base_url", "http://host.docker.internal:1234")
-
-        // Harmless dummy value if the provider requires a non-empty key.
-        // LM Studio ignores it unless authentication is enabled.
-        Do settings.%Set("api_key", "lm-studio")
-
-        Set runtimeProvider = ##class(%AI.Provider).Create(
-            "openai",
-            settings
-        )
-
-        Set runtimeAgent = ##class(%AI.Agent).%New(runtimeProvider)
-        Set runtimeAgent.Model = "qwen/qwen3.8-27b"
-        Set runtimeAgent.SystemPrompt = "You are a helpful local assistant."
-    } Catch ex {
-        Set sc = ex.AsStatus()
+    Set name = "TestCustomAssistant"
+    Set existing = ##class(AIHubStudio.AI.Agent).Open(name)
+    If $ISOBJECT(existing) {
+        Set cleanup = existing.RemoveToolSet("AIHubStudio.ToolSet.Starter")
+        Set cleanup = ##class(AIHubStudio.AI.Agent).Delete(name)
     }
 
+    Set provider = ##class(AIHubStudio.AI.Provider).Open("LocalOllama")
+    If '$ISOBJECT(provider) Quit $$$ERROR($$$GeneralError,"LocalOllama provider is not configured")
+
+    Set agent = ##class(AIHubStudio.AI.Agent).Create(name)
+    Do agent.Description("Temporary custom-agent validation")
+    Do agent.Provider("LocalOllama")
+    Do agent.Model(provider.DefaultModel)
+    Do agent.Instructions("Reply concisely and use tools when needed.")
+    Do agent.Temperature(0.2)
+    Do agent.MaxTokens(256)
+    Set sc = agent.Save()
+    If $$$ISOK(sc) Set sc = agent.AddToolSet("AIHubStudio.ToolSet.Starter")
+    If $$$ISOK(sc) {
+        Set item = ##class(AIHubStudio.Runtime.AgentCatalog).Get("metadata:"_name)
+        If item.%Get("name","") '= name Set sc = $$$ERROR($$$GeneralError,"Custom agent was not discovered in catalog")
+    }
+    If $$$ISOK(sc) Set sc = ##class(AIHubStudio.Runtime.AgentCatalog).CreateRuntime("metadata:"_name,.runtimeAgent)
+    If $$$ISOK(sc), '$ISOBJECT(runtimeAgent) Set sc = $$$ERROR($$$GeneralError,"Custom agent runtime was not created")
+
+    Set saved = ##class(AIHubStudio.AI.Agent).Open(name)
+    If $ISOBJECT(saved) Set cleanup = saved.RemoveToolSet("AIHubStudio.ToolSet.Starter")
+    Set cleanup = ##class(AIHubStudio.AI.Agent).Delete(name)
+    If $$$ISOK(sc), $$$ISERR(cleanup) Set sc = cleanup
+    If $$$ISOK(sc), ##class(AIHubStudio.AI.Agent).Exists(name) Set sc = $$$ERROR($$$GeneralError,"Custom agent cleanup failed")
     Quit sc
 }
-
-ClassMethod TestAgent() As %Status
-{
-    Set sc = $$$OK
-    Set sc=##class(AIHubStudio.Test).InitLocalAgent(.runtimeAgent)
-    Write $SYSTEM.Status.GetErrorText(sc),!
-
-    Set session=runtimeAgent.CreateSession()
-    Set response=runtimeAgent.Chat(session,"Hello! Introduce yourself.")
-    Write response.Content,!    
-    Quit sc
-
-}
-
 }

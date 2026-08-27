@@ -110,7 +110,7 @@ ClassMethod Delete(name As %String) As %Status
         Return $$$ERROR($$$GeneralError, "Agent '_name_' not found")
     }
     
-    Set sc = metadata.%Delete()
+    Set sc = ##class(AIHubStudio.Metadata.Agent).%Delete(metadata.%Oid())
     If $$$ISERR(sc) {
         Return sc
     }
@@ -398,6 +398,56 @@ Method GetProviderInfo() As %DynamicObject
     }
     
     Quit {}
+}
+
+/// Build a runtime %AI.Agent from saved agent and provider metadata.
+Method CreateRuntime(Output runtimeAgent As %AI.Agent) As %Status
+{
+    Set sc = $$$OK
+    Set runtimeAgent = $$$NULLOREF
+
+    If ..IsNew {
+        Quit $$$ERROR($$$GeneralError, "Agent must be saved before runtime creation")
+    }
+    If '..Enabled {
+        Quit $$$ERROR($$$GeneralError, "Agent '" _ ..Name _ "' is disabled")
+    }
+    If ..Provider = "" {
+        Quit $$$ERROR($$$GeneralError, "Agent provider is required")
+    }
+    If ..Model = "" {
+        Quit $$$ERROR($$$GeneralError, "Agent model is required")
+    }
+
+    Set provider = ##class(AIHubStudio.AI.Provider).Open(..Provider)
+    If '$ISOBJECT(provider) {
+        Quit $$$ERROR($$$GeneralError, "Provider '" _ ..Provider _ "' not found")
+    }
+
+    Set sc = provider.CreateRuntime(.runtimeProvider)
+    If $$$ISERR(sc) {
+        Quit sc
+    }
+
+    Try {
+        Set runtimeAgent = ##class(%AI.Agent).%New(runtimeProvider)
+        Set runtimeAgent.Model = ..Model
+        Set runtimeAgent.SystemPrompt = ..Instructions
+        If ..Temperature '= "" Set runtimeAgent.Temperature = ..Temperature
+        Set toolSetNames = ..Metadata.GetToolSetNames()
+        For index=0:1:(toolSetNames.%Size()-1) {
+            Set sc = runtimeAgent.UseToolSet(toolSetNames.%Get(index))
+            If $$$ISERR(sc) Quit
+        }
+        If $$$ISOK(sc), ..Metadata.ArrayContains(toolSetNames,"AIHubStudio.ToolSet.Starter") {
+            Set sc = runtimeAgent.ToolManager.SetAuthPolicy(##class(AIHubStudio.Policy.DataAuthorization).%New())
+            If $$$ISOK(sc) Set sc = runtimeAgent.ToolManager.SetAuditPolicy(##class(AIHubStudio.Policy.ToolAudit).%New())
+        }
+    } Catch ex {
+        Set sc = ex.AsStatus()
+    }
+
+    Quit sc
 }
 
 }

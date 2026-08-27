@@ -30,9 +30,42 @@ XData setup
     <Arg Value="1"/>
   </Invoke>
 
+  <Invoke Class="App.Installer" Method="RegisterMCPApplication" CheckStatus="1" Return="mcpsc">
+    <Arg Value="${NAMESPACE}"/>
+    <Arg Value="/mcp/data"/>
+    <Arg Value="AIHubStudio.MCP.DataService"/>
+  </Invoke>
+
+  <Namespace Name="${NAMESPACE}">
+    <Invoke Class="AIHubStudio.Setup" Method="Run" CheckStatus="1" Return="setupsc"/>
+  </Namespace>
+
   <Log Level="3" Text="End manifest" />
 
 </Manifest>
+}
+
+ClassMethod RegisterMCPApplication(pNameSpace As %String, pName As %String, pClassName As %String) As %Status
+{
+    New $Namespace
+    Set $Namespace = "%SYS"
+    If '##class(Security.Roles).Exists("AIHubStudioMCP") {
+        Set resources = "%DB_"_pNameSpace_"_CODE:R,%DB_"_pNameSpace_"_DATA:RW"
+        Set sc = ##class(Security.Roles).Create("AIHubStudioMCP","Least-privilege role for audited AI Hub Studio MCP access",resources,"")
+        If $$$ISERR(sc) Quit sc
+    }
+    Set spec("AutheEnabled") = $$$AuthePassword
+    Set spec("NameSpace") = pNameSpace
+    Set spec("Description") = "Read-only audited IRIS data MCP endpoint"
+    Set spec("IsNameSpaceDefault") = $$$NO
+    Set spec("DispatchClass") = pClassName
+    Set spec("MatchRoles") = ":AIHubStudioMCP"
+    If '##class(Security.Applications).Exists(pName) {
+        Set sc = ##class(Security.Applications).Create(pName,.spec)
+    } Else {
+        Set sc = ##class(Security.Applications).Modify(pName,.spec)
+    }
+    Quit sc
 }
 
 ClassMethod setup(ByRef pVars, pLogLevel As %Integer = 3, pInstaller As %Installer.Installer, pLogger As %Installer.AbstractLogger) As %Status [ CodeMode = objectgenerator, Internal ]
